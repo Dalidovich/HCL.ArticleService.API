@@ -26,54 +26,48 @@ namespace HCL.ArticleService.API.Controllers
 
         [Authorize]
         [HttpPost("v1/Article")]
-        public async Task<IResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
+        public async Task<IActionResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
             if (articleDTO == null)
             {
-                return Results.NotFound();
+                return BadRequest();
             }
             var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
-            if (resourse.Data == null)
+            if (resourse.Data != null)
             {
-                return Results.NoContent();
+                return Created(Results.Json(new { articleId = resourse.Data.Id }));
             }
-            else
-            {
-                return Results.Json(new { articleId = resourse.Data.Id });
-            }
+            return NotFound();
         }
 
         [Authorize]
         [HttpDelete("v1/OwnArticle")]
-        public async Task<IResult> DeleteOwnArticle([FromQuery] string ownId, [FromQuery] string articleId)
+        public async Task<IActionResult> DeleteOwnArticle([FromQuery] string ownId, [FromQuery] string articleId)
         {
             var article = _articleControllService.GetArticleOData().Data.Where(x=>x.Id== articleId).SingleOrDefault();
             if (article == null)
             {
-                return Results.NoContent();
+                return NotFound();
             }
             else if (article.Author == ownId)
             {
                 await _articleControllService.DeleteArticle(x => x.Id == articleId);
-                return Results.Ok();
+                return NoContent();
             }
-            return Results.StatusCode(403);
+            return Forbid();
         }
 
         [Authorize(Roles = "admin")]
         [HttpDelete("v1/Article")]
-        public async Task<IResult> DeleteOwnArticle([FromQuery] string articleId)
+        public async Task<IActionResult> DeleteOwnArticle([FromQuery] string articleId)
         {
             var article = _articleControllService.GetArticleOData().Data.Where(x => x.Id == articleId).SingleOrDefault();
             if (article == null)
             {
-                return Results.NoContent();
+                return NotFound();
             }
-            else
-            {
-                await _articleControllService.DeleteArticle(x => x.Id == articleId);
-                return Results.Ok();
-            }
+            await _articleControllService.DeleteArticle(x => x.Id == articleId);
+            return NoContent();
         }
 
         [HttpGet("odata/v1/Article")]
