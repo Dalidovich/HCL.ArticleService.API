@@ -24,7 +24,7 @@ namespace HCL.ArticleService.API.Controllers
             _articleControllService= articleControllService;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("v1/Article")]
         public async Task<IResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
@@ -43,12 +43,11 @@ namespace HCL.ArticleService.API.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpDelete("v1/OwnArticle")]
         public async Task<IResult> DeleteOwnArticle([FromQuery] string ownId, [FromQuery] string articleId)
         {
-            var c = _articleControllService.GetArticleOData().Data;
-            var article = _articleControllService.GetArticleOData().Data.Where(x=>x.Id== ownId).SingleOrDefault();
+            var article = _articleControllService.GetArticleOData().Data.Where(x=>x.Id== articleId).SingleOrDefault();
             if (article == null)
             {
                 return Results.NoContent();

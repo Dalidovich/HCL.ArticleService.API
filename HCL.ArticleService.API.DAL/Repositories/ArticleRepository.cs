@@ -37,11 +37,6 @@ namespace HCL.ArticleService.API.DAL.Repositories
             return deletedArticle.IsAcknowledged;
         }
 
-        public async Task<Article> GetArticleAsync(Expression<Func<Article, bool>> expression)
-        {
-            return await _articlesTable.Find(expression).SingleOrDefaultAsync();
-        }
-
         public IQueryable<Article> GetArticlesAsync()
         {
             return _articlesTable.AsQueryable();

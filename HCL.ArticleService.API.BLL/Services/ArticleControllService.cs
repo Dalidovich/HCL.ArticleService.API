@@ -99,33 +99,5 @@ namespace HCL.ArticleService.API.BLL.Services
             }
         }
 
-        public async Task<BaseResponse<Article>> GetArticle(Expression<Func<Article, bool>> expression)
-        {
-            try
-            {
-                var entity = await _articleRepository.GetArticleAsync(expression);
-                if (entity == null)
-                {
-                    return new StandartResponse<Article>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                return new StandartResponse<Article>()
-                {
-                    Data = entity,
-                    StatusCode = StatusCode.ArticleRead
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetArticleBase] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
     }
 }

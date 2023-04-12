@@ -15,6 +15,5 @@ namespace HCL.ArticleService.API.BLL.Interfaces
         public Task<BaseResponse<Article>> CreateArticle(Article account);
         public Task<BaseResponse<bool>> DeleteArticle(Expression<Func<Article, bool>> expression);
         public BaseResponse<IQueryable<Article>> GetArticleOData();
-        public BaseResponse<Article> GetArticle(Expression<Func<Article, bool>> expression);
     }
 }
