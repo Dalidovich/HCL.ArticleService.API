@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HCL.ArticleService.API.DAL\HCL.ArticleService.API.DAL.csproj" />
+    <ProjectReference Include="..\HCL.ArticleService.API.Domain\HCL.ArticleService.API.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
