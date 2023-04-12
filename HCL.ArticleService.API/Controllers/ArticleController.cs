@@ -22,8 +22,8 @@ namespace HCL.ArticleService.API.Controllers
             _articleControllService= articleControllService;
         }
 
-        //[Authorize]
-        [HttpPost("CreateArticle/")]
+        [Authorize]
+        [HttpPost("v1/CreateArticle/")]
         public async Task<IResult> CreateArticle(ArticleDTO articleDTO)
         {
             if (articleDTO == null)
@@ -42,7 +42,7 @@ namespace HCL.ArticleService.API.Controllers
         }
 
         [Authorize]
-        [HttpDelete("DeleteOwnArticle/{ownId}/{articleId}")]
+        [HttpDelete("v1/DeleteOwnArticle/{ownId}/{articleId}")]
         public async Task<IResult> DeleteOwnArticle(string ownId, string articleId)
         {
             var article=await _articleControllService.GetArticle(x=>x.Id==articleId);
@@ -59,7 +59,7 @@ namespace HCL.ArticleService.API.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("DeleteArticle/{articleId}")]
+        [HttpDelete("v1/DeleteArticle/{articleId}")]
         public async Task<IResult> DeleteOwnArticle(string articleId)
         {
             var article = await _articleControllService.GetArticle(x => x.Id == articleId);
@@ -71,7 +71,7 @@ namespace HCL.ArticleService.API.Controllers
             return Results.NoContent();
         }
 
-        [HttpGet("GetArticle/{filterOperator}/{field}/{value}")]
+        [HttpGet("v1/GetArticle/{filterOperator}/{field}/{value}")]
         public async Task<IResult> GetArticle(string filterOperator,string field, string value)
         {
             var filter = new BsonDocument { { field, new BsonDocument(filterOperator, value) } };
@@ -83,7 +83,7 @@ namespace HCL.ArticleService.API.Controllers
             return Results.NoContent();
         }
 
-        [HttpGet("GetArticle/{filterOperator}/{field}/{value}/{skipCount}/{takeCount}")]
+        [HttpGet("v1/GetArticle/{filterOperator}/{field}/{value}/{skipCount}/{takeCount}")]
         public async Task<IResult> GetArticles(string filterOperator, string field, string value,int skipCount,int takeCount)
         {
             var filter = new BsonDocument { { field, new BsonDocument(filterOperator, value) } };
