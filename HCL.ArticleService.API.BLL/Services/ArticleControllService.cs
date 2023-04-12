@@ -4,7 +4,9 @@ using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using MongoDB.Bson;
+using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,70 +25,6 @@ namespace HCL.ArticleService.API.BLL.Services
         {
             _articleRepository = articleRepository;
             _logger = logger;
-        }
-
-        private async Task<BaseResponse<Article>> GetArticleBase(Article? entity)
-        {
-            try
-            {
-                if (entity == null)
-                {
-                    return new StandartResponse<Article>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                return new StandartResponse<Article>()
-                {
-                    Data = entity,
-                    StatusCode = StatusCode.ArticleRead
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetArticleBase] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
-
-        public async Task<BaseResponse<Article>> GetArticle(BsonDocument filter)
-        {
-            try
-            {
-                var entity = await _articleRepository.GetArticleAsync(filter);
-                return await GetArticleBase(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetArticle_BsonDocument] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
-
-        public async Task<BaseResponse<Article>> GetArticle(Expression<Func<Article, bool>> expression)
-        {
-            try
-            {
-                var entity = await _articleRepository.GetArticleAsync(expression);
-                return await GetArticleBase(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetArticle_Expression] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
         }
 
         public async Task<BaseResponse<Article>> CreateArticle(Article account)
@@ -115,14 +53,6 @@ namespace HCL.ArticleService.API.BLL.Services
         {
             try
             {
-                var entity = await _articleRepository.GetArticlesAsync(expression,0,1);
-                if (entity == null)
-                {
-                    return new StandartResponse<bool>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
                 return new StandartResponse<bool>()
                 {
                     Data = await _articleRepository.DeleteAsync(expression),
@@ -140,18 +70,19 @@ namespace HCL.ArticleService.API.BLL.Services
             }
         }
 
-        private async Task<BaseResponse<IEnumerable<Article>>> GetAllArticlesBase(IEnumerable<Article>? contents)
+        public BaseResponse<IQueryable<Article>> GetArticleOData()
         {
             try
             {
+                var contents=_articleRepository.GetArticlesAsync();
                 if (contents == null)
                 {
-                    return new StandartResponse<IEnumerable<Article>>()
+                    return new StandartResponse<IQueryable<Article>>()
                     {
                         Message = "entity not found"
                     };
                 }
-                return new StandartResponse<IEnumerable<Article>>()
+                return new StandartResponse<IQueryable<Article>>()
                 {
                     Data = contents,
                     StatusCode = StatusCode.ArticleRead
@@ -159,8 +90,8 @@ namespace HCL.ArticleService.API.BLL.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[GetAllArticles] : {ex.Message}");
-                return new StandartResponse<IEnumerable<Article>>()
+                _logger.LogError(ex, $"[GetArticleOData] : {ex.Message}");
+                return new StandartResponse<IQueryable<Article>>()
                 {
                     Message = ex.Message,
                     StatusCode = StatusCode.InternalServerError,
@@ -168,35 +99,28 @@ namespace HCL.ArticleService.API.BLL.Services
             }
         }
 
-        public async Task<BaseResponse<IEnumerable<Article>>> GetAllArticles(Expression<Func<Article, bool>> expression, int skip, int loadCount)
+        public async Task<BaseResponse<Article>> GetArticle(Expression<Func<Article, bool>> expression)
         {
             try
             {
-                var contents = await _articleRepository.GetArticlesAsync(expression,skip,loadCount);
-                return await GetAllArticlesBase(contents);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetAllArticles_Expression] : {ex.Message}");
-                return new StandartResponse<IEnumerable<Article>>()
+                var entity = await _articleRepository.GetArticleAsync(expression);
+                if (entity == null)
                 {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
+                    return new StandartResponse<Article>()
+                    {
+                        Message = "entity not found"
+                    };
+                }
+                return new StandartResponse<Article>()
+                {
+                    Data = entity,
+                    StatusCode = StatusCode.ArticleRead
                 };
             }
-        }
-
-        public async Task<BaseResponse<IEnumerable<Article>>> GetAllArticles(BsonDocument filter, int skip, int loadCount)
-        {
-            try
-            {
-                var contents = await _articleRepository.GetArticlesAsync(filter,skip,loadCount);
-                return await GetAllArticlesBase(contents);
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[GetAllArticles_BsonDocument] : {ex.Message}");
-                return new StandartResponse<IEnumerable<Article>>()
+                _logger.LogError(ex, $"[GetArticleBase] : {ex.Message}");
+                return new StandartResponse<Article>()
                 {
                     Message = ex.Message,
                     StatusCode = StatusCode.InternalServerError,

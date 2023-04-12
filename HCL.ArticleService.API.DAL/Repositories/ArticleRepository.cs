@@ -1,4 +1,5 @@
 ﻿using HCL.ArticleService.API.DAL.Repositories.Interfaces;
+using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -17,11 +18,11 @@ namespace HCL.ArticleService.API.DAL.Repositories
         private IMongoDatabase _database;
         private IMongoCollection<Article> _articlesTable;
 
-        public ArticleRepository()
+        public ArticleRepository(MongoDBSettings mongoDBSettings)
         {
-            _client = new MongoClient("mongodb://localhost:27017");
-            _database = _client.GetDatabase("HCL_Article");
-            _articlesTable = _database.GetCollection<Article>("articles");
+            _client = new MongoClient(mongoDBSettings.Host);
+            _database = _client.GetDatabase(mongoDBSettings.Database);
+            _articlesTable = _database.GetCollection<Article>(mongoDBSettings.Collection);
         }
 
         public async Task<Article> AddAsync(Article article)
@@ -33,7 +34,7 @@ namespace HCL.ArticleService.API.DAL.Repositories
         public async Task<bool> DeleteAsync(Expression<Func<Article, bool>> expression)
         {
             var deletedArticle= await _articlesTable.DeleteManyAsync(expression);
-            return true;
+            return deletedArticle.IsAcknowledged;
         }
 
         public async Task<Article> GetArticleAsync(Expression<Func<Article, bool>> expression)
@@ -41,19 +42,9 @@ namespace HCL.ArticleService.API.DAL.Repositories
             return await _articlesTable.Find(expression).SingleOrDefaultAsync();
         }
 
-        public async Task<Article> GetArticleAsync(BsonDocument filter)
+        public IQueryable<Article> GetArticlesAsync()
         {
-            return await _articlesTable.Find(filter).SingleOrDefaultAsync();
-        }
-
-        public async Task<IEnumerable<Article>> GetArticlesAsync(Expression<Func<Article, bool>> expression, int skip, int loadCount)
-        {
-            return await _articlesTable.Find(expression).Skip(skip).Limit(loadCount).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Article>> GetArticlesAsync(BsonDocument filter, int skip, int loadCount)
-        {
-            return await _articlesTable.Find(filter).Skip(skip).Limit(loadCount).ToListAsync();
+            return _articlesTable.AsQueryable();
         }
     }
 }
