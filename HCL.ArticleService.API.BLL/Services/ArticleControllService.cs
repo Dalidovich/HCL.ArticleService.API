@@ -40,12 +40,7 @@ namespace HCL.ArticleService.API.BLL.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[CreateArticle] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
+                throw new Exception($"[CreateArticle] : {ex.Message}");
             }
         }
 
@@ -61,12 +56,7 @@ namespace HCL.ArticleService.API.BLL.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[DeleteArticle] : {ex.Message}");
-                return new StandartResponse<bool>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
+                throw new Exception($"[DeleteArticle] : {ex.Message}");
             }
         }
 
@@ -90,12 +80,7 @@ namespace HCL.ArticleService.API.BLL.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[GetArticleOData] : {ex.Message}");
-                return new StandartResponse<IQueryable<Article>>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
+                throw new Exception($"[GetArticleOData] : {ex.Message}");
             }
         }
 

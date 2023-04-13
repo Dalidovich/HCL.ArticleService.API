@@ -1,3 +1,4 @@
+using HCL.ArticleService.API.BLL.Midleware;
 using HCL.ArticleService.API.Domain.DTO;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
@@ -13,25 +14,14 @@ namespace HCL.ArticleService.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
             builder.AddRepositores();
             builder.AddServices();
-
-            builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDbSettings"));
-            builder.Services.AddSingleton(serviceProvider =>
-        serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value);
+            builder.AddMongoDBConnection();
+            builder.AddODataProperty();            
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            builder.Services.AddControllers().AddOData(opt =>
-            {
-                opt.Count().Filter().Expand().Select().OrderBy().SetMaxTop(5000)
-                    .AddRouteComponents("odata", new ODataConventionModelBuilder().GetEdmModel());
-                opt.TimeZone = TimeZoneInfo.Utc;
-            });
-
 
             var app = builder.Build();
 
@@ -41,10 +31,9 @@ namespace HCL.ArticleService.API
                 app.UseSwaggerUI();
             }
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
 
             app.MapControllers();
 
