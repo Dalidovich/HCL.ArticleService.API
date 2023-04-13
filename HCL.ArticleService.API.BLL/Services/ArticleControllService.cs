@@ -65,7 +65,7 @@ namespace HCL.ArticleService.API.BLL.Services
             try
             {
                 var contents=_articleRepository.GetArticlesAsync();
-                if (contents == null)
+                if (contents.Count() == 0)
                 {
                     return new StandartResponse<IQueryable<Article>>()
                     {
