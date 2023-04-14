@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCL.ArticleService.API", "HCL.ArticleService.API\HCL.ArticleService.API.csproj", "{5ABC6E26-48B7-48CD-AAA9-DCD0282A6E49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCL.ArticleService.API", "HCL.ArticleService.API\HCL.ArticleService.API.csproj", "{5ABC6E26-48B7-48CD-AAA9-DCD0282A6E49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCL.ArticleService.API.Domain", "HCL.ArticleService.API.Domain\HCL.ArticleService.API.Domain.csproj", "{F4146659-0E8A-400B-9D87-2666A194DEE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCL.ArticleService.API.Domain", "HCL.ArticleService.API.Domain\HCL.ArticleService.API.Domain.csproj", "{F4146659-0E8A-400B-9D87-2666A194DEE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCL.ArticleService.API.DAL", "HCL.ArticleService.API.DAL\HCL.ArticleService.API.DAL.csproj", "{96B286F4-EB6C-428D-BB10-C1DB0D41EC24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCL.ArticleService.API.DAL", "HCL.ArticleService.API.DAL\HCL.ArticleService.API.DAL.csproj", "{96B286F4-EB6C-428D-BB10-C1DB0D41EC24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCL.ArticleService.API.BLL", "HCL.ArticleService.API.BLL\HCL.ArticleService.API.BLL.csproj", "{C7B1106B-2F5F-4028-BB97-CF9782D43A7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCL.ArticleService.API.BLL", "HCL.ArticleService.API.BLL\HCL.ArticleService.API.BLL.csproj", "{C7B1106B-2F5F-4028-BB97-CF9782D43A7D}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{BCC19507-1E8A-440D-B89A-72492AA8F8D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C7B1106B-2F5F-4028-BB97-CF9782D43A7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7B1106B-2F5F-4028-BB97-CF9782D43A7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7B1106B-2F5F-4028-BB97-CF9782D43A7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCC19507-1E8A-440D-B89A-72492AA8F8D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCC19507-1E8A-440D-B89A-72492AA8F8D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCC19507-1E8A-440D-B89A-72492AA8F8D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCC19507-1E8A-440D-B89A-72492AA8F8D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

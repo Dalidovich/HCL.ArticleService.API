@@ -29,59 +29,36 @@ namespace HCL.ArticleService.API.BLL.Services
 
         public async Task<BaseResponse<Article>> CreateArticle(Article account)
         {
-            try
+            var createdAccount = await _articleRepository.AddAsync(account);
+            return new StandartResponse<Article>()
             {
-                var createdAccount = await _articleRepository.AddAsync(account);
-                return new StandartResponse<Article>()
-                {
-                    Data = createdAccount,
-                    StatusCode = StatusCode.ArticleCreate
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"[CreateArticle] : {ex.Message}");
-            }
+                Data = createdAccount,
+                StatusCode = StatusCode.ArticleCreate
+            };
+
         }
 
         public async Task<BaseResponse<bool>> DeleteArticle(Expression<Func<Article, bool>> expression)
         {
-            try
+            return new StandartResponse<bool>()
             {
-                return new StandartResponse<bool>()
-                {
-                    Data = await _articleRepository.DeleteAsync(expression),
-                    StatusCode = StatusCode.ArticleDelete
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"[DeleteArticle] : {ex.Message}");
-            }
+                Data = await _articleRepository.DeleteAsync(expression),
+                StatusCode = StatusCode.ArticleDelete
+            };
         }
 
         public BaseResponse<IQueryable<Article>> GetArticleOData()
         {
-            try
+            var contents=_articleRepository.GetArticlesAsync();
+            if (contents.Count() == 0)
             {
-                var contents=_articleRepository.GetArticlesAsync();
-                if (contents.Count() == 0)
-                {
-                    return new StandartResponse<IQueryable<Article>>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                return new StandartResponse<IQueryable<Article>>()
-                {
-                    Data = contents,
-                    StatusCode = StatusCode.ArticleRead
-                };
+                throw new KeyNotFoundException("[GetArticleOData]");
             }
-            catch (Exception ex)
+            return new StandartResponse<IQueryable<Article>>()
             {
-                throw new Exception($"[GetArticleOData] : {ex.Message}");
-            }
+                Data = contents,
+                StatusCode = StatusCode.ArticleRead
+            };
         }
 
     }

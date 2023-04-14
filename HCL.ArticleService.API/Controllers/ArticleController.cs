@@ -13,7 +13,7 @@ namespace HCL.ArticleService.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ArticleController : ODataController
+    public class ArticleController : ControllerBase
     {
         private readonly ILogger<ArticleController> _logger;
         private readonly IArticleControllService _articleControllService;
@@ -24,20 +24,21 @@ namespace HCL.ArticleService.API.Controllers
             _articleControllService= articleControllService;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("v1/Article")]
         public async Task<IActionResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
-            if (articleDTO == null)
+            if (ModelState.IsValid)
             {
-                return BadRequest();
+                Console.WriteLine("valid");
+                var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
+                if (resourse.Data != null)
+                {
+                    return Created("",Results.Json(new { articleId = resourse.Data.Id }));
+                }
+                return NotFound();
             }
-            var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
-            if (resourse.Data != null)
-            {
-                return Created(Results.Json(new { articleId = resourse.Data.Id }));
-            }
-            return NotFound();
+            return BadRequest();
         }
 
         [Authorize]
@@ -68,13 +69,6 @@ namespace HCL.ArticleService.API.Controllers
             }
             await _articleControllService.DeleteArticle(x => x.Id == articleId);
             return NoContent();
-        }
-
-        [HttpGet("odata/v1/Article")]
-        [EnableQuery]
-        public IQueryable<Article> GetArticle()
-        {
-            return _articleControllService.GetArticleOData().Data;
         }
     }
 }
