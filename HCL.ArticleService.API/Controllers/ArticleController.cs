@@ -24,13 +24,12 @@ namespace HCL.ArticleService.API.Controllers
             _articleControllService= articleControllService;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("v1/Article")]
         public async Task<IActionResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
             if (ModelState.IsValid)
             {
-                Console.WriteLine("valid");
                 var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
                 if (resourse.Data != null)
                 {

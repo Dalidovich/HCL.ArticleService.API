@@ -23,42 +23,14 @@ namespace HCL.ArticleService.API.DAL.Repositories
 
         public ArticleRepository(MongoDBSettings mongoDBSettings)
         {
-            try
-            {
-                _client = new MongoClient(mongoDBSettings.Host);
-                _database = _client.GetDatabase(mongoDBSettings.Database);
-                _articlesTable = _database.GetCollection<Article>(mongoDBSettings.Collection);
-                Console.WriteLine("_________________");
-                Console.WriteLine(mongoDBSettings.Host);
-                Console.WriteLine(mongoDBSettings.Database);
-                Console.WriteLine(mongoDBSettings.Collection);
-                Console.WriteLine("_________________.");
-            }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine("____________||____");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.InnerException.Message);
-                throw ex;
-            }
-            
+            _client = new MongoClient(mongoDBSettings.Host);
+            _database = _client.GetDatabase(mongoDBSettings.Database);
+            _articlesTable = _database.GetCollection<Article>(mongoDBSettings.Collection);   
         }
 
         public async Task<Article> AddAsync(Article article)
         {
-            Console.WriteLine("_1_!");
-            try
-            {
-                await _articlesTable.InsertOneAsync(article);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.InnerException.Message);
-            }
-            Console.WriteLine("_2_");
+            await _articlesTable.InsertOneAsync(article);
             return article;
         }
 
