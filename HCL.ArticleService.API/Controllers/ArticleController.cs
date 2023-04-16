@@ -1,4 +1,5 @@
 using HCL.ArticleService.API.BLL.Interfaces;
+using HCL.ArticleService.API.BLL.Services;
 using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +19,8 @@ namespace HCL.ArticleService.API.Controllers
         private readonly ILogger<ArticleController> _logger;
         private readonly IArticleControllService _articleControllService;
 
-        public ArticleController(ILogger<ArticleController> logger, IArticleControllService articleControllService)
+        public ArticleController(ILogger<ArticleController> logger, IArticleControllService articleControllService
+            , KafkaProducerService kafkaProducerService)
         {
             _logger = logger;
             _articleControllService= articleControllService;
