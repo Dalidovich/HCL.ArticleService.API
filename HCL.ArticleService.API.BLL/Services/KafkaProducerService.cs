@@ -28,66 +28,27 @@ namespace HCL.ArticleService.API.BLL.Services
 
         public async Task<BaseResponse<bool>> createTopicAsync()
         {
-            try
+            using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = _bootstrapServers }).Build())
             {
-                using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = _bootstrapServers }).Build())
-                {
-                    await adminClient.CreateTopicsAsync(new TopicSpecification[] { new TopicSpecification { Name = _topic, ReplicationFactor = 1, NumPartitions = 1 } });
-                }
-                
-                return new StandartResponse<bool>()
-                {
-                    Data= true,
-                    StatusCode = StatusCode.TopicCreate,
-                };
+                await adminClient.CreateTopicsAsync(new TopicSpecification[] { new TopicSpecification { Name = _topic, ReplicationFactor = 1, NumPartitions = 1 } });
             }
-            catch (CreateTopicsException e) 
-            {
-                if (e.Results[0].Error.Code == ErrorCode.TopicAlreadyExists)
-                {
-                    _logger.LogWarning($"[createTopic] : {e.Results[0].Error.Reason}");
-                }
 
-                return new StandartResponse<bool>()
-                {
-                    Data = true,
-                    StatusCode = StatusCode.TopicAlreadyExists,
-                };
-            }
-            catch (Exception ex)
+            return new StandartResponse<bool>()
             {
-                _logger.LogError(ex, $"[createTopic] : {ex.Message}");
-
-                return new StandartResponse<bool>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = true,
+                StatusCode = StatusCode.TopicCreate,
+            };
         }
 
         public async Task<BaseResponse<bool>> CreateMessage(string messageContent)
         {
-            try
-            {
-                var deliveryReport = await _producer.ProduceAsync(_topic, new Message<Null, string> { Value = messageContent, });
+            var deliveryReport = await _producer.ProduceAsync(_topic, new Message<Null, string> { Value = messageContent, });
 
-                return new StandartResponse<bool>()
-                {
-                    Data = true,
-                    StatusCode = StatusCode.MessageSend,
-                };
-            }
-            catch (Exception ex)
+            return new StandartResponse<bool>()
             {
-                _logger.LogError(ex, $"[CreateMessage] : {ex.Message}");
-
-                return new StandartResponse<bool>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = true,
+                StatusCode = StatusCode.MessageSend,
+            };
         }
     }
 }

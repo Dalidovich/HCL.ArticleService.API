@@ -30,6 +30,7 @@ namespace HCL.ArticleService.API.BLL.Services
         public async Task<BaseResponse<Article>> CreateArticle(Article account)
         {
             var createdAccount = await _articleRepository.AddAsync(account);
+
             return new StandartResponse<Article>()
             {
                 Data = createdAccount,
@@ -54,6 +55,7 @@ namespace HCL.ArticleService.API.BLL.Services
             {
                 throw new KeyNotFoundException("[GetArticleOData]");
             }
+
             return new StandartResponse<IQueryable<Article>>()
             {
                 Data = contents,
