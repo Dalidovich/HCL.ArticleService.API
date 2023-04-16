@@ -35,7 +35,7 @@ namespace HCL.ArticleService.API.Controllers
                 var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
                 if (resourse.Data != null)
                 {
-                    return Created("",Results.Json(new { articleId = resourse.Data.Id }));
+                    return Created("",new { articleId = resourse.Data.Id });
                 }
                 return NotFound();
             }
