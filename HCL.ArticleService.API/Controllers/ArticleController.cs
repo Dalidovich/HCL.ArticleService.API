@@ -19,11 +19,10 @@ namespace HCL.ArticleService.API.Controllers
         private readonly ILogger<ArticleController> _logger;
         private readonly IArticleControllService _articleControllService;
 
-        public ArticleController(ILogger<ArticleController> logger, IArticleControllService articleControllService
-            , KafkaProducerService kafkaProducerService)
+        public ArticleController(ILogger<ArticleController> logger, IArticleControllService articleControllService)
         {
             _logger = logger;
-            _articleControllService= articleControllService;
+            _articleControllService = articleControllService;
         }
 
         [Authorize]
@@ -37,8 +36,10 @@ namespace HCL.ArticleService.API.Controllers
                 {
                     return Created("",new { articleId = resourse.Data.Id });
                 }
+
                 return NotFound();
             }
+
             return BadRequest();
         }
 
@@ -54,8 +55,10 @@ namespace HCL.ArticleService.API.Controllers
             else if (article.Author == ownId)
             {
                 await _articleControllService.DeleteArticle(x => x.Id == articleId);
+
                 return NoContent();
             }
+
             return Forbid();
         }
 
@@ -69,6 +72,7 @@ namespace HCL.ArticleService.API.Controllers
                 return NotFound();
             }
             await _articleControllService.DeleteArticle(x => x.Id == articleId);
+
             return NoContent();
         }
     }

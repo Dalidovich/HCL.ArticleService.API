@@ -20,7 +20,7 @@ namespace HCL.ArticleService.API
         public static void AddServices(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddScoped<IArticleControllService, ArticleControllService>();
-            webApplicationBuilder.Services.AddScoped<KafkaProducerService>();
+            webApplicationBuilder.Services.AddScoped<IKafkaProducerService, KafkaProducerService>();
         }
 
         public static void AddODataProperty(this WebApplicationBuilder webApplicationBuilder)
@@ -41,10 +41,8 @@ namespace HCL.ArticleService.API
 
         public static void AddKafkaProperty(this WebApplicationBuilder webApplicationBuilder)
         {
-
             webApplicationBuilder.Services.Configure<KafkaSettings>(webApplicationBuilder.Configuration.GetSection("KafkaSettings"));
             webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<KafkaSettings>>().Value);
-
         }
 
     }

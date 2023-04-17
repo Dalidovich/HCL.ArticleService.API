@@ -16,8 +16,8 @@ namespace HCL.ArticleService.API
 
             builder.AddRepositores();
             builder.AddServices();
-            builder.AddMongoDBConnection();
             builder.AddKafkaProperty();
+            builder.AddMongoDBConnection();
             builder.AddODataProperty();
 
             builder.Services.AddControllers();

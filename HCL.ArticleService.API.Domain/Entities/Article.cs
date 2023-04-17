@@ -26,7 +26,7 @@ namespace HCL.ArticleService.API.Domain.Entities
             Title = articleDTO.Title;
             Theme = articleDTO.Theme;
             Content = articleDTO.Content;
-            Author = articleDTO.Author;
+            Author = articleDTO.Author.ToString();
             CreateDate= DateTime.Now;
         }
     }

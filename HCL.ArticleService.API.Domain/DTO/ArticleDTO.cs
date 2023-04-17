@@ -19,6 +19,6 @@ namespace HCL.ArticleService.API.Domain.DTO
         public string Content { get; set; }
 
         [Required(ErrorMessage = "Need Author")]
-        public string Author { get; set; }
+        public Guid Author { get; set; }
     }
 }

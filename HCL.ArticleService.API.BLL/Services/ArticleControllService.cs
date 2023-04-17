@@ -1,5 +1,6 @@
 ﻿using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;
+using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
@@ -19,24 +20,27 @@ namespace HCL.ArticleService.API.BLL.Services
     public class ArticleControllService : IArticleControllService
     {
         private readonly IArticleRepository _articleRepository;
+        private readonly IKafkaProducerService _kafkaProducerService;
         protected readonly ILogger<IArticleControllService> _logger;
 
-        public ArticleControllService(IArticleRepository articleRepository, ILogger<IArticleControllService> logger)
+        public ArticleControllService(IArticleRepository articleRepository, ILogger<IArticleControllService> logger
+            , IKafkaProducerService kafkaProducerService)
         {
             _articleRepository = articleRepository;
             _logger = logger;
+            _kafkaProducerService = kafkaProducerService;
         }
 
-        public async Task<BaseResponse<Article>> CreateArticle(Article account)
+        public async Task<BaseResponse<Article>> CreateArticle(Article article)
         {
-            var createdAccount = await _articleRepository.AddAsync(account);
+            var createdArticle = await _articleRepository.AddAsync(article);
+            await _kafkaProducerService.CreateMessage(new KafkaArticleCreateNotification(createdArticle));
 
             return new StandartResponse<Article>()
             {
-                Data = createdAccount,
+                Data = createdArticle,
                 StatusCode = StatusCode.ArticleCreate
             };
-
         }
 
         public async Task<BaseResponse<bool>> DeleteArticle(Expression<Func<Article, bool>> expression)
@@ -62,6 +66,5 @@ namespace HCL.ArticleService.API.BLL.Services
                 StatusCode = StatusCode.ArticleRead
             };
         }
-
     }
 }

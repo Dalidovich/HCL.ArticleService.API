@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
+using System.Security.Authentication;
+using MongoDB.Driver;
 
 namespace HCL.ArticleService.API.BLL.Midleware
 {
@@ -41,6 +43,20 @@ namespace HCL.ArticleService.API.BLL.Midleware
                     ex.Results[0].Error.Reason,
                     (int)HttpStatusCode.InternalServerError,
                     "Crete kafka topic error");
+            }
+            catch (AuthenticationException ex)
+            {
+                await HandleExceptionAsync(httpContext,
+                    ex.Message,
+                    (int)HttpStatusCode.Unauthorized,
+                    "Authentication error");
+            }
+            catch (MongoException ex)
+            {
+                await HandleExceptionAsync(httpContext,
+                    ex.Message,
+                    (int)HttpStatusCode.ServiceUnavailable,
+                    "Database service temporarily unavailable");
             }
             catch (KafkaException ex)
             {
