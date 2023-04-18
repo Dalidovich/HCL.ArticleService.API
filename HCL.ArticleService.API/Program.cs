@@ -1,4 +1,4 @@
-using HCL.ArticleService.API.BLL.Midleware;
+using HCL.ArticleService.API.Midleware;
 
 namespace HCL.ArticleService.API
 {

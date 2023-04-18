@@ -5,7 +5,7 @@ using MongoDB.Driver;
 using System.Net;
 using System.Security.Authentication;
 
-namespace HCL.ArticleService.API.BLL.Midleware
+namespace HCL.ArticleService.API.Midleware
 {
     public class ExceptionHandlingMiddleware
     {
