@@ -4,6 +4,7 @@ using HCL.ArticleService.API.BLL.Services;
 using HCL.ArticleService.API.DAL.Repositories;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
 using Microsoft.OData.ModelBuilder;
@@ -45,5 +46,10 @@ namespace HCL.ArticleService.API
             webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<KafkaSettings>>().Value);
         }
 
+        public static void AddAuthProperty(this WebApplicationBuilder webApplicationBuilder)
+        {
+            webApplicationBuilder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => webApplicationBuilder.Configuration.Bind("JwtSettings", options));
+        }
     }
 }

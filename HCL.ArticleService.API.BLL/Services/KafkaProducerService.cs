@@ -12,16 +12,17 @@ namespace HCL.ArticleService.API.BLL.Services
 {
     public class KafkaProducerService: IKafkaProducerService
     {
-        private readonly string _topic= "new_article";
+        private readonly string _topic;
         private readonly string _bootstrapServers;
         private readonly IProducer<string, string> _producer;
 
         public KafkaProducerService(KafkaSettings kafkaSettings)
         {
             _bootstrapServers = kafkaSettings.BootstrapServers;
+            _topic = kafkaSettings.Topic;
             var config = new ProducerConfig
             {
-                BootstrapServers = _bootstrapServers
+                BootstrapServers = _bootstrapServers,
             };
             _producer = new ProducerBuilder<string, string>(config)
                 .Build();

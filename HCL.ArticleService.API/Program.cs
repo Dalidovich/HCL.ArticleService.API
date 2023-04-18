@@ -1,5 +1,7 @@
 using HCL.ArticleService.API.BLL.Midleware;
 using HCL.ArticleService.API.Domain.DTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -19,6 +21,8 @@ namespace HCL.ArticleService.API
             builder.AddKafkaProperty();
             builder.AddMongoDBConnection();
             builder.AddODataProperty();
+            builder.AddAuthProperty();
+            
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
