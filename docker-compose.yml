@@ -18,6 +18,8 @@ services:
       - MongoDbSettings__Database=HCL_Article
       - MongoDbSettings__Collection=articles
       - KafkaSettings__BootstrapServers=kafka:9092
+      - KafkaSettings__User=kafka
+      - KafkaSettings__Password=kafka
     networks:
       - dev
 
@@ -59,6 +61,8 @@ services:
       - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
       - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - KAFKA_ZOOKEEPER_USER=kafka
+      - KAFKA_ZOOKEEPER_PASSWORD=kafka
     depends_on:
       - zookeeper
     volumes:

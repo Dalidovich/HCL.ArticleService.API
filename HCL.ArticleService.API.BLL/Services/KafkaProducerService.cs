@@ -23,6 +23,8 @@ namespace HCL.ArticleService.API.BLL.Services
             var config = new ProducerConfig
             {
                 BootstrapServers = _bootstrapServers,
+                SaslUsername=kafkaSettings.User,
+                SaslPassword=kafkaSettings.Password,
             };
             _producer = new ProducerBuilder<string, string>(config)
                 .Build();
