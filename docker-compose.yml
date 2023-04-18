@@ -18,6 +18,7 @@ services:
       - MongoDbSettings__Database=HCL_Article
       - MongoDbSettings__Collection=articles
       - KafkaSettings__BootstrapServers=kafka:9092
+      - KafkaSettings__Topic=new_article
       - KafkaSettings__User=kafka
       - KafkaSettings__Password=kafka
     networks:
