@@ -1,14 +1,9 @@
-﻿using Confluent.Kafka.Admin;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 using HCL.ArticleService.API.Domain.DTO;
-using HCL.ArticleService.API.Domain.Enums;
-using HCL.ArticleService.API.Domain.InnerResponse;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Text.Json;
-using System.Security.Authentication;
 using MongoDB.Driver;
+using System.Net;
+using System.Security.Authentication;
 
 namespace HCL.ArticleService.API.BLL.Midleware
 {

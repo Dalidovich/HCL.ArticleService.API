@@ -1,5 +1,4 @@
-﻿
-using HCL.ArticleService.API.BLL.Interfaces;
+﻿using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.BLL.Services;
 using HCL.ArticleService.API.DAL.Repositories;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;

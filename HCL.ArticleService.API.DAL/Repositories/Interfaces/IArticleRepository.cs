@@ -1,5 +1,4 @@
 ﻿using HCL.ArticleService.API.Domain.Entities;
-using MongoDB.Bson;
 using System.Linq.Expressions;
 
 namespace HCL.ArticleService.API.DAL.Repositories.Interfaces

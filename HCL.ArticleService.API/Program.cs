@@ -1,11 +1,4 @@
 using HCL.ArticleService.API.BLL.Midleware;
-using HCL.ArticleService.API.Domain.DTO;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.OData;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.OData.ModelBuilder;
 
 namespace HCL.ArticleService.API
 {
@@ -21,8 +14,7 @@ namespace HCL.ArticleService.API
             builder.AddKafkaProperty();
             builder.AddMongoDBConnection();
             builder.AddODataProperty();
-            builder.AddAuthProperty();
-            
+            builder.AddAuthProperty();            
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -37,9 +29,9 @@ namespace HCL.ArticleService.API
             }
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             app.UseHttpsRedirection();
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();
