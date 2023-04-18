@@ -23,26 +23,23 @@ namespace HCL.ArticleService.API.Controllers
         [HttpPost("v1/Article")]
         public async Task<IActionResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
-            if (ModelState.IsValid)
+            var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
+            if (resourse.StatusCode == Domain.Enums.StatusCode.ArticleCreate)
             {
-                var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
-                if (resourse.Data != null)
-                {
 
-                    return Created("", new { articleId = resourse.Data.Id });
-                }
-
-                return NotFound();
+                return Created("", new { articleId = resourse.Data.Id });
             }
 
-            return BadRequest();
+            return NotFound();
         }
 
         [Authorize]
         [HttpDelete("v1/OwnArticle")]
         public async Task<IActionResult> DeleteOwnArticle([FromQuery] string ownId, [FromQuery] string articleId)
         {
-            var article = _articleControllService.GetArticleOData().Data.Where(x => x.Id == articleId).SingleOrDefault();
+            var article = _articleControllService.GetArticleOData().Data
+                ?.Where(x => x.Id == articleId)
+                .SingleOrDefault();
             if (article == null)
             {
 
@@ -62,7 +59,9 @@ namespace HCL.ArticleService.API.Controllers
         [HttpDelete("v1/Article")]
         public async Task<IActionResult> DeleteOwnArticle([FromQuery] string articleId)
         {
-            var article = _articleControllService.GetArticleOData().Data.Where(x => x.Id == articleId).SingleOrDefault();
+            var article = _articleControllService.GetArticleOData().Data
+                ?.Where(x => x.Id == articleId)
+                .SingleOrDefault();
             if (article == null)
             {
 
