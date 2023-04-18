@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HCL.ArticleService.API.DAL\HCL.ArticleService.API.DAL.csproj" />
     <ProjectReference Include="..\HCL.ArticleService.API.Domain\HCL.ArticleService.API.Domain.csproj" />
   </ItemGroup>

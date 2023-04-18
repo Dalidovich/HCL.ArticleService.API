@@ -1,0 +1,38 @@
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  hcl.articleservice.api:
+    image: ${DOCKER_REGISTRY-}hclarticleserviceapi
+    depends_on: 
+      - app_db_hcl_article
+    container_name: HCL.ArticleMicroservice
+    build:
+      context: .
+      dockerfile: HCL.ArticleService.API/Dockerfile
+    environment:
+      - MongoDbSettings__Host=mongodb://mongo:mongo@app_db_hcl_article:27017/?authMechanism=SCRAM-SHA-256&tls=false&authSource=admin
+      - MongoDbSettings__Database=HCL_Article
+      - MongoDbSettings__Collection=articles
+    networks:
+      - dev
+
+  app_db_hcl_article: 
+    image: mongo:latest
+    container_name: app_db_hcl_article
+    ports:
+      - "27017:27017"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - mongo_data_container_articles:/var/lib/mongo_articles/data
+    networks:
+      - dev
+            
+volumes:
+  mongo_data_container_articles:
