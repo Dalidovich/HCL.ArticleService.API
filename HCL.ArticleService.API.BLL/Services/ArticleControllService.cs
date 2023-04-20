@@ -47,7 +47,6 @@ namespace HCL.ArticleService.API.BLL.Services
             var contents = _articleRepository.GetArticlesAsync();
             if (contents.Count() == 0)
             {
-
                 throw new KeyNotFoundException("[GetArticleOData]");
             }
 
