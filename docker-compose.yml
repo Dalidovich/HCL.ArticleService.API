@@ -64,6 +64,7 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
       - KAFKA_ZOOKEEPER_USER=kafka
       - KAFKA_ZOOKEEPER_PASSWORD=kafka
+      - KAFKA_ENABLE_KRAFT=no
     depends_on:
       - zookeeper
     volumes:
