@@ -20,8 +20,6 @@ namespace HCL.ArticleService.API.BLL.Services
             var config = new ProducerConfig
             {
                 BootstrapServers = _bootstrapServers,
-                SaslUsername = kafkaSettings.User,
-                SaslPassword = kafkaSettings.Password,
             };
 
             _producer = new ProducerBuilder<string, string>(config).Build();
@@ -29,7 +27,7 @@ namespace HCL.ArticleService.API.BLL.Services
 
         public async Task<BaseResponse<bool>> CreateMessage(KafkaArticleCreateNotification messageContent)
         {
-            await _producer.ProduceAsync(_topic, new Message<string, string>
+            var delivReport=await _producer.ProduceAsync(_topic, new Message<string, string>
             {
                 Key = messageContent.ArticleId,
                 Value = messageContent.AuthorId

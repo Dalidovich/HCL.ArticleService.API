@@ -19,8 +19,6 @@ services:
       - MongoDbSettings__Collection=articles
       - KafkaSettings__BootstrapServers=kafka:9092
       - KafkaSettings__Topic=new_article
-      - KafkaSettings__User=kafka
-      - KafkaSettings__Password=kafka
     networks:
       - dev
 
@@ -58,12 +56,10 @@ services:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
       - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
-      - KAFKA_ZOOKEEPER_USER=kafka
-      - KAFKA_ZOOKEEPER_PASSWORD=kafka
       - KAFKA_ENABLE_KRAFT=no
     depends_on:
       - zookeeper
