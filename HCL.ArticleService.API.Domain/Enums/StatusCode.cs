@@ -5,8 +5,9 @@
         EntityNotFound = 0,
 
         ArticleCreate = 1,
-        ArticleDelete = 2,
-        ArticleRead = 3,
+        ArticleUpdate = 2,
+        ArticleDelete = 3,
+        ArticleRead = 4,
 
         //Kafka status code
         TopicCreate = 11,

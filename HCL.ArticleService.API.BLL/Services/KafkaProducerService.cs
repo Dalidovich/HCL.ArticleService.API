@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
+using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
 

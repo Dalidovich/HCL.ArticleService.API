@@ -14,6 +14,7 @@ namespace HCL.ArticleService.API.Domain.Entities
         public string Content { get; set; }
         public string Author { get; set; }
         public DateTime CreateDate { get; set; }
+        public bool IsActual { get; set; }
 
         public Article(ArticleDTO articleDTO)
         {
@@ -23,6 +24,7 @@ namespace HCL.ArticleService.API.Domain.Entities
             Content = articleDTO.Content;
             Author = articleDTO.Author.ToString();
             CreateDate= DateTime.Now;
+            IsActual = true;
         }
     }
 }

@@ -1,4 +1,4 @@
-using HCL.ArticleService.API.Midleware;
+using Hangfire;
 
 namespace HCL.ArticleService.API
 {
@@ -14,7 +14,9 @@ namespace HCL.ArticleService.API
             builder.AddKafkaProperty();
             builder.AddMongoDBConnection();
             builder.AddODataProperty();
-            builder.AddAuthProperty();            
+            builder.AddAuthProperty();
+            builder.AddHangfireProperty();
+            builder.AddHostedServices();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -28,7 +30,7 @@ namespace HCL.ArticleService.API
                 app.UseSwaggerUI();
             }
 
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.AddMiddleware();
 
             app.UseHttpsRedirection();
             app.UseAuthorization();

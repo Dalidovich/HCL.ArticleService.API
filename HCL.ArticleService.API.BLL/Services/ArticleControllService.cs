@@ -4,7 +4,8 @@ using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
-using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
 
 namespace HCL.ArticleService.API.BLL.Services
@@ -44,7 +45,7 @@ namespace HCL.ArticleService.API.BLL.Services
 
         public BaseResponse<IQueryable<Article>> GetArticleOData()
         {
-            var contents = _articleRepository.GetArticlesAsync();
+            var contents = _articleRepository.GetArticlesOdata();
             if (contents.Count() == 0)
             {
                 throw new KeyNotFoundException("[GetArticleOData]");
@@ -54,6 +55,18 @@ namespace HCL.ArticleService.API.BLL.Services
             {
                 Data = contents,
                 StatusCode = StatusCode.ArticleRead
+            };
+        }
+
+        public async Task<BaseResponse<bool>> UpdateArticlesActualState()
+        {
+            var filter = Builders<Article>.Filter.Lte(x=>x.CreateDate, DateTime.Now.AddYears(-2));
+            var updeteSettings = Builders<Article>.Update.Set(x=>x.IsActual, false);
+
+            return new StandartResponse<bool>()
+            {
+                Data = await _articleRepository.UpdateManyAsync(filter,updeteSettings),
+                StatusCode = StatusCode.ArticleUpdate
             };
         }
     }

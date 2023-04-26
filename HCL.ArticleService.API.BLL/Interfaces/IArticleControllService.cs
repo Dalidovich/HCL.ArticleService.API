@@ -8,6 +8,7 @@ namespace HCL.ArticleService.API.BLL.Interfaces
     {
         public Task<BaseResponse<Article>> CreateArticle(Article account);
         public Task<BaseResponse<bool>> DeleteArticle(Expression<Func<Article, bool>> expression);
+        public Task<BaseResponse<bool>> UpdateArticlesActualState();
         public BaseResponse<IQueryable<Article>> GetArticleOData();
     }
 }

@@ -1,5 +1,5 @@
 ﻿using HCL.ArticleService.API.DAL.Repositories.Interfaces;
-using HCL.ArticleService.API.Domain.DTO;
+using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Entities;
 using MongoDB.Driver;
 using System.Linq.Expressions;
@@ -33,10 +33,17 @@ namespace HCL.ArticleService.API.DAL.Repositories
             return deletedArticle.IsAcknowledged;
         }
 
-        public IQueryable<Article> GetArticlesAsync()
+        public IQueryable<Article> GetArticlesOdata()
         {
 
             return _articlesTable.AsQueryable();
+        }
+
+        public async Task<bool> UpdateManyAsync(FilterDefinition<Article> filter, UpdateDefinition<Article> updateDefinition)
+        {
+            var updatedArticle = await _articlesTable.UpdateManyAsync(filter, updateDefinition);
+
+            return updatedArticle.IsAcknowledged;
         }
     }
 }
