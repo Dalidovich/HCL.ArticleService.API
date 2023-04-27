@@ -71,5 +71,18 @@ namespace HCL.ArticleService.API.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("v1/ArticleWithAthor")]
+        public async Task<IActionResult> GetArticleWithAthor([FromQuery] string articleId)
+        {
+            var articleWithAthor = await _articleControllService.GetFullArticleInfo(articleId);
+            if (articleWithAthor == null)
+            {
+
+                return NotFound();
+            }
+
+            return Ok(articleWithAthor.Data);
+        }
     }
 }

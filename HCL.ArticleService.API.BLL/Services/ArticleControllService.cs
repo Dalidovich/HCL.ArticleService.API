@@ -1,6 +1,9 @@
-﻿using HCL.ArticleService.API.BLL.Interfaces;
+﻿using Grpc.Net.Client;
+using HCL.ArticleService.API.BLL.gRPCClients;
+using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
+using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
@@ -14,11 +17,13 @@ namespace HCL.ArticleService.API.BLL.Services
     {
         private readonly IArticleRepository _articleRepository;
         private readonly IKafkaProducerService _kafkaProducerService;
+        private readonly IdentityGrpcSettings _identityGrpcSettings;
 
-        public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService)
+        public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService, IdentityGrpcSettings identityGrpcSettings)
         {
             _articleRepository = articleRepository;
             _kafkaProducerService = kafkaProducerService;
+            _identityGrpcSettings = identityGrpcSettings;
         }
 
         public async Task<BaseResponse<Article>> CreateArticle(Article article)
@@ -58,14 +63,38 @@ namespace HCL.ArticleService.API.BLL.Services
             };
         }
 
+        public async Task<BaseResponse<ArticleWithAthorDTO>> GetFullArticleInfo(string articleId)
+        {
+            var rawArticel = _articleRepository.GetArticlesOdata().Where(x => x.Id == articleId).SingleOrDefault();
+            if (rawArticel == null)
+            {
+                throw new KeyNotFoundException("[GetFullArticleInfo]");
+            }
+
+            AthorPublicProfileReply reply;
+            using (var channel = GrpcChannel.ForAddress(_identityGrpcSettings.Host))
+            {
+                var client = new AthorPublicProfile.AthorPublicProfileClient(channel);
+                reply = await client.GetProfileAsync(new AthorIdRequest { AccountId = articleId });
+            }
+
+            ArticleWithAthorDTO article = new ArticleWithAthorDTO(reply.Login, reply.Status, reply.CreateDate.ToDateTime(), rawArticel);
+
+            return new StandartResponse<ArticleWithAthorDTO>()
+            {
+                Data = article,
+                StatusCode = StatusCode.ArticleRead
+            };
+        }
+
         public async Task<BaseResponse<bool>> UpdateArticlesActualState()
         {
-            var filter = Builders<Article>.Filter.Lte(x=>x.CreateDate, DateTime.Now.AddYears(-2));
-            var updeteSettings = Builders<Article>.Update.Set(x=>x.IsActual, false);
+            var filter = Builders<Article>.Filter.Lte(x => x.CreateDate, DateTime.Now.AddYears(-2));
+            var updeteSettings = Builders<Article>.Update.Set(x => x.IsActual, false);
 
             return new StandartResponse<bool>()
             {
-                Data = await _articleRepository.UpdateManyAsync(filter,updeteSettings),
+                Data = await _articleRepository.UpdateManyAsync(filter, updeteSettings),
                 StatusCode = StatusCode.ArticleUpdate
             };
         }

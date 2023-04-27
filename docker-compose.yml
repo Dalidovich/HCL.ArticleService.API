@@ -17,6 +17,7 @@ services:
       - MongoDbSettings__Host=mongodb://mongo:mongo@app_db_hcl_article:27017/?authMechanism=SCRAM-SHA-256&tls=false&authSource=admin
       - MongoDbSettings__Database=HCL_Article
       - MongoDbSettings__Collection=articles
+      - IdentityGrpcSettings__Host=http://localhost:7168
       - HangfireMongoDbSettings__Host=mongodb://mongo:mongo@app_db_hcl_article:27017/?authMechanism=SCRAM-SHA-256&tls=false&authSource=admin
       - HangfireMongoDbSettings__HangfireDatabase=HCL_Article_Hangfire
       - KafkaSettings__BootstrapServers=kafka:9092

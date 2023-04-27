@@ -1,5 +1,3 @@
-using Hangfire;
-
 namespace HCL.ArticleService.API
 {
 
@@ -17,6 +15,7 @@ namespace HCL.ArticleService.API
             builder.AddAuthProperty();
             builder.AddHangfireProperty();
             builder.AddHostedServices();
+            builder.AddGrpcProperty();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

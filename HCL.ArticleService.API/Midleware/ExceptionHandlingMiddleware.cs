@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using Grpc.Core;
 using HCL.ArticleService.API.Domain.DTO;
 using MongoDB.Driver;
 using System.Net;
@@ -52,6 +53,13 @@ namespace HCL.ArticleService.API.Midleware
                     ex.Message,
                     (int)HttpStatusCode.ServiceUnavailable,
                     "Database service temporarily unavailable");
+            }
+            catch (RpcException ex)
+            {
+                await HandleExceptionAsync(httpContext,
+                    ex.Message,
+                    (int)HttpStatusCode.ServiceUnavailable,
+                    "gRPC service temporarily unavailable");
             }
             catch (KafkaException ex)
             {

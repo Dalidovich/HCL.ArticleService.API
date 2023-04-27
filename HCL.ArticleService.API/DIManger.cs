@@ -47,6 +47,12 @@ namespace HCL.ArticleService.API
             webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value);
         }
 
+        public static void AddGrpcProperty(this WebApplicationBuilder webApplicationBuilder)
+        {
+            webApplicationBuilder.Services.Configure<IdentityGrpcSettings>(webApplicationBuilder.Configuration.GetSection("IdentityGrpcSettings"));
+            webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<IdentityGrpcSettings>>().Value);
+        }
+
         public static void AddHostedServices(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddHostedService<HangfireRecurringHostJob>();
