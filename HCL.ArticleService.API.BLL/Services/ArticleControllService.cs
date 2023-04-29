@@ -71,11 +71,15 @@ namespace HCL.ArticleService.API.BLL.Services
                 throw new KeyNotFoundException("[GetFullArticleInfo]");
             }
 
+            var httpHandler = new HttpClientHandler();
+            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
             AthorPublicProfileReply reply;
-            using (var channel = GrpcChannel.ForAddress(_identityGrpcSettings.Host))
+            using (var channel = GrpcChannel.ForAddress(_identityGrpcSettings.Host, new GrpcChannelOptions { HttpHandler = httpHandler }))
             {
                 var client = new AthorPublicProfile.AthorPublicProfileClient(channel);
-                reply = await client.GetProfileAsync(new AthorIdRequest { AccountId = articleId });
+                reply = await client.GetProfileAsync(new AthorIdRequest { AccountId = rawArticel.Author });
             }
 
             ArticleWithAthorDTO article = new ArticleWithAthorDTO(reply.Login, reply.Status, reply.CreateDate.ToDateTime(), rawArticel);
