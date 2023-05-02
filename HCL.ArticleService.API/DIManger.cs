@@ -104,7 +104,6 @@ namespace HCL.ArticleService.API
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -117,6 +116,14 @@ namespace HCL.ArticleService.API
                     IssuerSigningKey = signingKey,
                     ValidateIssuerSigningKey = true,
                 };
+            });
+        }
+
+        public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)
+        {
+            webApplicationBuilder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = webApplicationBuilder.Configuration.GetSection("RedisOption:Host").Value;
             });
         }
 

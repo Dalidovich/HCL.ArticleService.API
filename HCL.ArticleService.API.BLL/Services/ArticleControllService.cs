@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using Amazon.Runtime.Internal.Util;
+using Grpc.Net.Client;
 using HCL.ArticleService.API.BLL.gRPCClients;
 using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;
@@ -7,9 +8,11 @@ using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
+using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace HCL.ArticleService.API.BLL.Services
 {
@@ -18,12 +21,15 @@ namespace HCL.ArticleService.API.BLL.Services
         private readonly IArticleRepository _articleRepository;
         private readonly IKafkaProducerService _kafkaProducerService;
         private readonly IdentityGrpcSettings _identityGrpcSettings;
+        private readonly IDistributedCache _distributedCache;
 
-        public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService, IdentityGrpcSettings identityGrpcSettings)
+        public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService
+            , IdentityGrpcSettings identityGrpcSettings, IDistributedCache distributedCache)
         {
             _articleRepository = articleRepository;
             _kafkaProducerService = kafkaProducerService;
             _identityGrpcSettings = identityGrpcSettings;
+            _distributedCache = distributedCache;
         }
 
         public async Task<BaseResponse<Article>> CreateArticle(Article article)
@@ -71,6 +77,25 @@ namespace HCL.ArticleService.API.BLL.Services
                 throw new KeyNotFoundException("[GetFullArticleInfo]");
             }
 
+            AthorPublicProfileReply? reply = null;
+            var replyString = await _distributedCache.GetStringAsync(rawArticel.Author);
+            if (replyString != null)
+            {
+                reply = JsonSerializer.Deserialize<AthorPublicProfileReply>(replyString);
+                ArticleWithAthorDTO article = new ArticleWithAthorDTO(reply.Login, reply.Status, reply.CreateDate.ToDateTime(), rawArticel);
+
+                return new StandartResponse<ArticleWithAthorDTO>()
+                {
+                    Data = article,
+                    StatusCode = StatusCode.ArticleRead
+                };
+            }
+
+            return await GetFullArticleInfoGrpc(rawArticel);
+        }
+
+        private async Task<BaseResponse<ArticleWithAthorDTO>> GetFullArticleInfoGrpc(Article rawArticel)
+        {
             var httpHandler = new HttpClientHandler();
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -81,7 +106,6 @@ namespace HCL.ArticleService.API.BLL.Services
                 var client = new AthorPublicProfile.AthorPublicProfileClient(channel);
                 reply = await client.GetProfileAsync(new AthorIdRequest { AccountId = rawArticel.Author });
             }
-
             ArticleWithAthorDTO article = new ArticleWithAthorDTO(reply.Login, reply.Status, reply.CreateDate.ToDateTime(), rawArticel);
 
             return new StandartResponse<ArticleWithAthorDTO>()

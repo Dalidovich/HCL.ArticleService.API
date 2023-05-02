@@ -17,7 +17,7 @@ namespace HCL.ArticleService.API.Controllers
             _articleControllService = articleControllService;
         }
 
-        [HttpGet("odata/v1/Article")]
+        [HttpGet("odata/v1/article")]
         [EnableQuery]
         public IQueryable<Article> GetArticle()
         {

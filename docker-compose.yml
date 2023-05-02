@@ -22,6 +22,7 @@ services:
       - HangfireMongoDbSettings__HangfireDatabase=HCL_Article_Hangfire
       - KafkaSettings__BootstrapServers=kafka:9092
       - KafkaSettings__Topic=new_article
+      - RedisOption__Host=host.docker.internal:6379,password=redis
     networks:
       - dev
 

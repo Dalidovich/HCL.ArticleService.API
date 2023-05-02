@@ -16,6 +16,7 @@ namespace HCL.ArticleService.API
             builder.AddHangfireProperty();
             builder.AddHostedServices();
             builder.AddGrpcProperty();
+            builder.AddRedisPropperty();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
