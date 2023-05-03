@@ -14,6 +14,11 @@
         TopicAlreadyExists = 12,
         MessageSend = 13,
 
+        //Redis status code
+        RedisLock = 21,
+        RedisEmpty = 22,
+        RedisReceive = 23,
+
         OK = 200,
         OKNoContent = 204,
         InternalServerError = 500,

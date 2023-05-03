@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Grpc.Net.Client;
+﻿using Grpc.Net.Client;
 using HCL.ArticleService.API.BLL.gRPCClients;
 using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;
@@ -8,11 +7,9 @@ using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
-using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
-using System.Text.Json;
 
 namespace HCL.ArticleService.API.BLL.Services
 {
@@ -21,15 +18,15 @@ namespace HCL.ArticleService.API.BLL.Services
         private readonly IArticleRepository _articleRepository;
         private readonly IKafkaProducerService _kafkaProducerService;
         private readonly IdentityGrpcSettings _identityGrpcSettings;
-        private readonly IDistributedCache _distributedCache;
+        private readonly IRedisLockService _redisLockService;
 
         public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService
-            , IdentityGrpcSettings identityGrpcSettings, IDistributedCache distributedCache)
+            , IdentityGrpcSettings identityGrpcSettings, IRedisLockService redisLockService)
         {
             _articleRepository = articleRepository;
             _kafkaProducerService = kafkaProducerService;
             _identityGrpcSettings = identityGrpcSettings;
-            _distributedCache = distributedCache;
+            _redisLockService = redisLockService;
         }
 
         public async Task<BaseResponse<Article>> CreateArticle(Article article)
@@ -77,12 +74,12 @@ namespace HCL.ArticleService.API.BLL.Services
                 throw new KeyNotFoundException("[GetFullArticleInfo]");
             }
 
-            AthorPublicProfileReply? reply = null;
-            var replyString = await _distributedCache.GetStringAsync(rawArticel.Author);
-            if (replyString != null)
+            var resource = await _redisLockService.GetAthor(rawArticel.Author);
+
+            if (resource.StatusCode == StatusCode.RedisReceive)
             {
-                reply = JsonSerializer.Deserialize<AthorPublicProfileReply>(replyString);
-                ArticleWithAthorDTO article = new ArticleWithAthorDTO(reply.Login, reply.Status, reply.CreateDate.ToDateTime(), rawArticel);
+                ArticleWithAthorDTO article = new ArticleWithAthorDTO
+                    (resource.Data.Login, resource.Data.Status, resource.Data.CreateDate.ToDateTime(), rawArticel);
 
                 return new StandartResponse<ArticleWithAthorDTO>()
                 {

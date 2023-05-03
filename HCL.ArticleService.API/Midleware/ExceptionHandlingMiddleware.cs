@@ -3,6 +3,7 @@ using Confluent.Kafka.Admin;
 using Grpc.Core;
 using HCL.ArticleService.API.Domain.DTO;
 using MongoDB.Driver;
+using StackExchange.Redis;
 using System.Net;
 using System.Security.Authentication;
 
@@ -67,6 +68,13 @@ namespace HCL.ArticleService.API.Midleware
                     ex.Message,
                     521,
                     "Kafka server error");
+            }
+            catch (RedisException ex)
+            {
+                await HandleExceptionAsync(httpContext,
+                    ex.Message,
+                    521,
+                    "Redis server error");
             }
             catch (Exception ex)
             {

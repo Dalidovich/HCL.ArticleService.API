@@ -11,6 +11,7 @@ using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Midleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
@@ -29,6 +30,7 @@ namespace HCL.ArticleService.API
         {
             webApplicationBuilder.Services.AddScoped<IArticleControllService, ArticleControllService>();
             webApplicationBuilder.Services.AddScoped<IKafkaProducerService, KafkaProducerService>();
+            webApplicationBuilder.Services.AddScoped<IRedisLockService, RedisLockService>();
         }
 
         public static void AddODataProperty(this WebApplicationBuilder webApplicationBuilder)
@@ -123,8 +125,11 @@ namespace HCL.ArticleService.API
         {
             webApplicationBuilder.Services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = webApplicationBuilder.Configuration.GetSection("RedisOption:Host").Value;
+                options.Configuration = webApplicationBuilder.Configuration.GetSection("RedisOptions:Host").Value;
             });
+
+            webApplicationBuilder.Services.Configure<RedisOptions>(webApplicationBuilder.Configuration.GetSection("RedisOptions"));
+            webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<RedisOptions>>().Value);
         }
 
         public static void AddMiddleware(this WebApplication webApplication)
