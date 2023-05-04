@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HCL.ArticleService.API.Domain.Enums
+﻿namespace HCL.ArticleService.API.Domain.Enums
 {
     public enum StatusCode
     {
         EntityNotFound = 0,
 
         ArticleCreate = 1,
-        ArticleDelete = 2,
-        ArticleRead = 3,
+        ArticleUpdate = 2,
+        ArticleDelete = 3,
+        ArticleRead = 4,
 
-        //Kafka
+        //Kafka status code
         TopicCreate = 11,
         TopicAlreadyExists = 12,
         MessageSend = 13,

@@ -1,6 +1,4 @@
-﻿using HCL.ArticleService.API.Domain.Enums;
-
-namespace HCL.ArticleService.API.Domain.DTO
+﻿namespace HCL.ArticleService.API.Domain.DTO
 {
     public class ErrorDTO
     {

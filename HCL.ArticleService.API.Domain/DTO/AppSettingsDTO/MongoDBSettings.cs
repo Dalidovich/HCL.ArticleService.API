@@ -1,4 +1,4 @@
-﻿namespace HCL.ArticleService.API.Domain.DTO
+﻿namespace HCL.ArticleService.API.Domain.DTO.AppSettingsDTO
 {
     public class MongoDBSettings
     {

@@ -1,9 +1,4 @@
-using HCL.ArticleService.API.BLL.Midleware;
-using HCL.ArticleService.API.Domain.DTO;
-using Microsoft.AspNetCore.OData;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.OData.ModelBuilder;
+using Hangfire;
 
 namespace HCL.ArticleService.API
 {
@@ -19,6 +14,9 @@ namespace HCL.ArticleService.API
             builder.AddKafkaProperty();
             builder.AddMongoDBConnection();
             builder.AddODataProperty();
+            builder.AddAuthProperty();
+            builder.AddHangfireProperty();
+            builder.AddHostedServices();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -32,10 +30,10 @@ namespace HCL.ArticleService.API
                 app.UseSwaggerUI();
             }
 
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.AddMiddleware();
+
             app.UseHttpsRedirection();
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();

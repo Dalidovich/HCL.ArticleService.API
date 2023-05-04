@@ -4,16 +4,9 @@ using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using MongoDB.Bson;
-using SharpCompress.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HCL.ArticleService.API.BLL.Services
 {
@@ -21,13 +14,10 @@ namespace HCL.ArticleService.API.BLL.Services
     {
         private readonly IArticleRepository _articleRepository;
         private readonly IKafkaProducerService _kafkaProducerService;
-        protected readonly ILogger<IArticleControllService> _logger;
 
-        public ArticleControllService(IArticleRepository articleRepository, ILogger<IArticleControllService> logger
-            , IKafkaProducerService kafkaProducerService)
+        public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService)
         {
             _articleRepository = articleRepository;
-            _logger = logger;
             _kafkaProducerService = kafkaProducerService;
         }
 
@@ -45,6 +35,7 @@ namespace HCL.ArticleService.API.BLL.Services
 
         public async Task<BaseResponse<bool>> DeleteArticle(Expression<Func<Article, bool>> expression)
         {
+
             return new StandartResponse<bool>()
             {
                 Data = await _articleRepository.DeleteAsync(expression),
@@ -54,7 +45,7 @@ namespace HCL.ArticleService.API.BLL.Services
 
         public BaseResponse<IQueryable<Article>> GetArticleOData()
         {
-            var contents=_articleRepository.GetArticlesAsync();
+            var contents = _articleRepository.GetArticlesOdata();
             if (contents.Count() == 0)
             {
                 throw new KeyNotFoundException("[GetArticleOData]");
@@ -64,6 +55,18 @@ namespace HCL.ArticleService.API.BLL.Services
             {
                 Data = contents,
                 StatusCode = StatusCode.ArticleRead
+            };
+        }
+
+        public async Task<BaseResponse<bool>> UpdateArticlesActualState()
+        {
+            var filter = Builders<Article>.Filter.Lte(x=>x.CreateDate, DateTime.Now.AddYears(-2));
+            var updeteSettings = Builders<Article>.Update.Set(x=>x.IsActual, false);
+
+            return new StandartResponse<bool>()
+            {
+                Data = await _articleRepository.UpdateManyAsync(filter,updeteSettings),
+                StatusCode = StatusCode.ArticleUpdate
             };
         }
     }
