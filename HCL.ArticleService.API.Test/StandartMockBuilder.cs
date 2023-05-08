@@ -36,6 +36,25 @@ namespace HCL.ArticleService.API.Test
             Host = "localhost",
         };
 
+        public static Mock<IGrpcService> CreateGrpcServiceMock()
+        {
+            var grpcService = new Mock<IGrpcService>();
+            grpcService.Setup(s => s.GetFullArticleInfoGrpc(It.IsAny<Article>()))
+                .ReturnsAsync((Article article) =>
+                {
+                    ArticleWithAthorDTO articleWithAthorDTO = new ArticleWithAthorDTO
+                    ("Ilia", "normal", DateTime.Now, article);
+
+                    return new StandartResponse<ArticleWithAthorDTO>()
+                    {
+                        Data = articleWithAthorDTO,
+                        StatusCode = Domain.Enums.StatusCode.ArticleRead
+                    };
+                });
+
+            return grpcService;
+        }
+
         public static Mock<IRedisLockService> CreateSuccessReceiveMessageRedisLockServiceMock()
         {
             var redisLockServ = new Mock<IRedisLockService>();

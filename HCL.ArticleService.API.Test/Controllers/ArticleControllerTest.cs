@@ -19,9 +19,10 @@ namespace HCL.ArticleService.API.Test.Controllers
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             var articleDto = new ArticleDTO()
@@ -60,12 +61,14 @@ namespace HCL.ArticleService.API.Test.Controllers
                     Title = "Test"
                 }
             };
+
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             //Act
@@ -94,12 +97,14 @@ namespace HCL.ArticleService.API.Test.Controllers
                     Title = "Test"
                 }
             };
+
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             //Act
@@ -127,12 +132,14 @@ namespace HCL.ArticleService.API.Test.Controllers
                     Title = "Test"
                 }
             };
+
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             //Act
@@ -160,12 +167,14 @@ namespace HCL.ArticleService.API.Test.Controllers
                     Title = "Test"
                 }
             };
+
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             //Act
@@ -194,12 +203,14 @@ namespace HCL.ArticleService.API.Test.Controllers
                     Title = "Test"
                 }
             };
+
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             //Act
@@ -228,12 +239,14 @@ namespace HCL.ArticleService.API.Test.Controllers
                     Title = "Test"
                 }
             };
+
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             //Act
@@ -261,13 +274,85 @@ namespace HCL.ArticleService.API.Test.Controllers
                     Title = "Test"
                 }
             };
+
             var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
-                , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+                , redisMock.Object, grpcServMock.Object);
+            var controller = new ArticleController(articServ);
 
+            //Act
+            var result = await controller.GetArticleWithAthor(Guid.NewGuid().ToString()) as NotFoundResult;
+
+            //Assert
+            result.Should().NotBeNull();
+            articles.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task GetArticle_WithExistArticleAndFailRedisResieve_ReturnOk()
+        {
+            //Arrange
+            var articleId = Guid.NewGuid().ToString();
+            List<Article> articles = new List<Article>()
+            {
+                new Article(new ArticleDTO())
+                {
+                    Id = articleId,
+                    Author = Guid.NewGuid().ToString(),
+                    IsActual = true,
+                    Content = "test",
+                    CreateDate = DateTime.Now,
+                    Theme = "test",
+                    Title = "Test"
+                }
+            };
+
+            var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
+            var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
+            var redisMock = StandartMockBuilder.CreateFailReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+
+            var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
+                , redisMock.Object, grpcServMock.Object);
+            var controller = new ArticleController(articServ);
+
+            //Act
+            var result = await controller.GetArticleWithAthor(articleId) as OkObjectResult;
+
+            //Assert
+            result.Should().NotBeNull();
+            articles.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task GetArticle_WithNotExistArticleAndFailRedisResieve_ReturnNotFound()
+        {
+            //Arrange
+            List<Article> articles = new List<Article>()
+            {
+                new Article(new ArticleDTO())
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Author = Guid.NewGuid().ToString(),
+                    IsActual = true,
+                    Content = "test",
+                    CreateDate = DateTime.Now,
+                    Theme = "test",
+                    Title = "Test"
+                }
+            };
+
+            var articRepMock = StandartMockBuilder.CreateAccountRepositoryMock(articles);
+            var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
+            var redisMock = StandartMockBuilder.CreateFailReceiveMessageRedisLockServiceMock();
+            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+
+            var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
+                , redisMock.Object, grpcServMock.Object);
             var controller = new ArticleController(articServ);
 
             //Act
