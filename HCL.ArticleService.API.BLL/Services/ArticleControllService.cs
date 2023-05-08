@@ -71,7 +71,8 @@ namespace HCL.ArticleService.API.BLL.Services
             var rawArticel = _articleRepository.GetArticlesOdata().Where(x => x.Id == articleId).SingleOrDefault();
             if (rawArticel == null)
             {
-                throw new KeyNotFoundException("[GetFullArticleInfo]");
+
+                return new StandartResponse<ArticleWithAthorDTO>();
             }
 
             var resource = await _redisLockService.GetAthor(rawArticel.Author);

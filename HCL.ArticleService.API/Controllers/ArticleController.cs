@@ -76,7 +76,7 @@ namespace HCL.ArticleService.API.Controllers
         public async Task<IActionResult> GetArticleWithAthor([FromQuery] string articleId)
         {
             var articleWithAthor = await _articleControllService.GetFullArticleInfo(articleId);
-            if (articleWithAthor == null)
+            if (articleWithAthor.StatusCode == Domain.Enums.StatusCode.EntityNotFound)
             {
 
                 return NotFound();
