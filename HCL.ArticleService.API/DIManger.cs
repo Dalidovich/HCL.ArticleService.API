@@ -11,7 +11,6 @@ using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Midleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
@@ -31,6 +30,7 @@ namespace HCL.ArticleService.API
             webApplicationBuilder.Services.AddScoped<IArticleControllService, ArticleControllService>();
             webApplicationBuilder.Services.AddScoped<IKafkaProducerService, KafkaProducerService>();
             webApplicationBuilder.Services.AddScoped<IRedisLockService, RedisLockService>();
+            webApplicationBuilder.Services.AddScoped<IGrpcService, GrpcService>();
         }
 
         public static void AddODataProperty(this WebApplicationBuilder webApplicationBuilder)

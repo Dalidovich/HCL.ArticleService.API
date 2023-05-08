@@ -3,13 +3,7 @@ using HCL.ArticleService.API.BLL.Services;
 using HCL.ArticleService.API.Controllers;
 using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace HCL.ArticleService.API.Test.Controllers
@@ -273,6 +267,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , StandartMockBuilder.identityGrpcSettings, redisMock.Object);
+
             var controller = new ArticleController(articServ);
 
             //Act
