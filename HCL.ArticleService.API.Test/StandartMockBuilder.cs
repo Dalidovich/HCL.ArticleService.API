@@ -7,6 +7,7 @@ using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.InnerResponse;
 using MockQueryable.Moq;
+using MongoDB.Driver;
 using Moq;
 using System.Linq.Expressions;
 
@@ -43,7 +44,7 @@ namespace HCL.ArticleService.API.Test
                 .ReturnsAsync((Article article) =>
                 {
                     ArticleWithAthorDTO articleWithAthorDTO = new ArticleWithAthorDTO
-                    ("Ilia", "normal", DateTime.Now, article);
+                    ("Dima", "normal", DateTime.Now, article);
 
                     return new StandartResponse<ArticleWithAthorDTO>()
                     {
@@ -124,6 +125,15 @@ namespace HCL.ArticleService.API.Test
 
             arRep.Setup(r => r.GetArticlesOdata())
                 .Returns(collectionQuerybleMock);
+
+            arRep.Setup(r => r.UpdateManyAsync(It.IsAny<FilterDefinition<Article>>(), It.IsAny<UpdateDefinition<Article>>()))
+                .ReturnsAsync(() =>
+                {
+                    articles.Where(x => x.CreateDate > DateTime.Now.AddYears(-2))
+                        .ToList().ForEach(x => x.IsActual = false);
+
+                    return true;
+                });
 
             return arRep;
         }
