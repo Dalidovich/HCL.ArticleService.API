@@ -1,7 +1,9 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using Grpc.Core;
 using HCL.ArticleService.API.Domain.DTO;
 using MongoDB.Driver;
+using StackExchange.Redis;
 using System.Net;
 using System.Security.Authentication;
 
@@ -53,12 +55,26 @@ namespace HCL.ArticleService.API.Midleware
                     (int)HttpStatusCode.ServiceUnavailable,
                     "Database service temporarily unavailable");
             }
+            catch (RpcException ex)
+            {
+                await HandleExceptionAsync(httpContext,
+                    ex.Message,
+                    (int)HttpStatusCode.ServiceUnavailable,
+                    "gRPC service temporarily unavailable");
+            }
             catch (KafkaException ex)
             {
                 await HandleExceptionAsync(httpContext,
                     ex.Message,
                     521,
                     "Kafka server error");
+            }
+            catch (RedisException ex)
+            {
+                await HandleExceptionAsync(httpContext,
+                    ex.Message,
+                    521,
+                    "Redis server error");
             }
             catch (Exception ex)
             {

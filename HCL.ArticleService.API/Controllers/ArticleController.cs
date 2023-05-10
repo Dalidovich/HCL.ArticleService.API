@@ -34,7 +34,7 @@ namespace HCL.ArticleService.API.Controllers
         }
 
         [Authorize]
-        [HttpDelete("v1/OwnArticle")]
+        [HttpDelete("v1/article/account")]
         public async Task<IActionResult> DeleteOwnArticle([FromQuery] string ownId, [FromQuery] string articleId)
         {
             var article = _articleControllService.GetArticleOData().Data
@@ -56,7 +56,7 @@ namespace HCL.ArticleService.API.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("v1/Article")]
+        [HttpDelete("v1/article")]
         public async Task<IActionResult> DeleteOwnArticle([FromQuery] string articleId)
         {
             var article = _articleControllService.GetArticleOData().Data
@@ -70,6 +70,19 @@ namespace HCL.ArticleService.API.Controllers
             await _articleControllService.DeleteArticle(x => x.Id == articleId);
 
             return NoContent();
+        }
+
+        [HttpPost("v1/article/withAthor")]
+        public async Task<IActionResult> GetArticleWithAthor([FromQuery] string articleId)
+        {
+            var articleWithAthor = await _articleControllService.GetFullArticleInfo(articleId);
+            if (articleWithAthor == null)
+            {
+
+                return NotFound();
+            }
+
+            return Ok(articleWithAthor.Data);
         }
     }
 }

@@ -11,6 +11,7 @@ using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Midleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
@@ -29,6 +30,7 @@ namespace HCL.ArticleService.API
         {
             webApplicationBuilder.Services.AddScoped<IArticleControllService, ArticleControllService>();
             webApplicationBuilder.Services.AddScoped<IKafkaProducerService, KafkaProducerService>();
+            webApplicationBuilder.Services.AddScoped<IRedisLockService, RedisLockService>();
         }
 
         public static void AddODataProperty(this WebApplicationBuilder webApplicationBuilder)
@@ -45,6 +47,12 @@ namespace HCL.ArticleService.API
         {
             webApplicationBuilder.Services.Configure<MongoDBSettings>(webApplicationBuilder.Configuration.GetSection("MongoDbSettings"));
             webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value);
+        }
+
+        public static void AddGrpcProperty(this WebApplicationBuilder webApplicationBuilder)
+        {
+            webApplicationBuilder.Services.Configure<IdentityGrpcSettings>(webApplicationBuilder.Configuration.GetSection("IdentityGrpcSettings"));
+            webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<IdentityGrpcSettings>>().Value);
         }
 
         public static void AddHostedServices(this WebApplicationBuilder webApplicationBuilder)
@@ -98,7 +106,6 @@ namespace HCL.ArticleService.API
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -112,6 +119,17 @@ namespace HCL.ArticleService.API
                     ValidateIssuerSigningKey = true,
                 };
             });
+        }
+
+        public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)
+        {
+            webApplicationBuilder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = webApplicationBuilder.Configuration.GetSection("RedisOptions:Host").Value;
+            });
+
+            webApplicationBuilder.Services.Configure<RedisOptions>(webApplicationBuilder.Configuration.GetSection("RedisOptions"));
+            webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<RedisOptions>>().Value);
         }
 
         public static void AddMiddleware(this WebApplication webApplication)
