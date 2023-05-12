@@ -14,6 +14,7 @@ services:
       context: .
       dockerfile: HCL.ArticleService.API/Dockerfile
     environment:
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
       - MongoDbSettings__Host=mongodb://mongo:mongo@app_db_hcl_article:27017/?authMechanism=SCRAM-SHA-256&tls=false&authSource=admin
       - MongoDbSettings__Database=HCL_Article
       - MongoDbSettings__Collection=articles

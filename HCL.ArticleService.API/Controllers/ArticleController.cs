@@ -1,10 +1,13 @@
+using Amazon.Auth.AccessControlPolicy;
 using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
+using HCL.ArticleService.API.Domain.DTO.Builders;
 using HCL.ArticleService.API.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System.Data;
+using System.Text.Json;
 
 namespace HCL.ArticleService.API.Controllers
 {
@@ -13,10 +16,12 @@ namespace HCL.ArticleService.API.Controllers
     public class ArticleController : ControllerBase
     {
         private readonly IArticleControllService _articleControllService;
+        private readonly ILogger<ArticleController> _logger;
 
-        public ArticleController(IArticleControllService articleControllService)
+        public ArticleController(IArticleControllService articleControllService, ILogger<ArticleController> logger)
         {
             _articleControllService = articleControllService;
+            _logger = logger;
         }
 
         [Authorize]
@@ -26,6 +31,13 @@ namespace HCL.ArticleService.API.Controllers
             var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
             if (resourse.StatusCode == Domain.Enums.StatusCode.ArticleCreate)
             {
+
+                var log = new LogDTOBuidlder("CreateArticle(articleDTO)")
+                    .BuildMessage("create article")
+                    .BuildStatusCode(201)
+                    .BuildSuccessState(true)
+                    .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
 
                 return Created("", new { articleId = resourse.Data.Id });
             }
@@ -48,6 +60,12 @@ namespace HCL.ArticleService.API.Controllers
             else if (article.Author == ownId)
             {
                 await _articleControllService.DeleteArticle(x => x.Id == articleId);
+                var log = new LogDTOBuidlder("DeleteOwnArticle(ownId,articleId)")
+                    .BuildMessage("delete article")
+                    .BuildStatusCode(204)
+                    .BuildSuccessState(true)
+                    .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
 
                 return NoContent();
             }
@@ -64,6 +82,11 @@ namespace HCL.ArticleService.API.Controllers
                 .SingleOrDefault();
             if (article == null)
             {
+                var log = new LogDTOBuidlder("DeleteOwnArticle(articleId)")
+                .BuildMessage("admin account delete article")
+                .BuildStatusCode(204)
+                .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
 
                 return NotFound();
             }
@@ -78,6 +101,12 @@ namespace HCL.ArticleService.API.Controllers
             var articleWithAthor = await _articleControllService.GetFullArticleInfo(articleId);
             if (articleWithAthor.StatusCode == Domain.Enums.StatusCode.EntityNotFound)
             {
+                var log = new LogDTOBuidlder("GetArticleWithAthor(articleId)")
+                    .BuildMessage("get article with athor")
+                    .BuildStatusCode(204)
+                    .BuildSuccessState(true)
+                    .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
 
                 return NotFound();
             }

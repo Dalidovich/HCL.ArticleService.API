@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
+using Serilog;
 using System.Text;
 
 namespace HCL.ArticleService.API
@@ -64,6 +65,12 @@ namespace HCL.ArticleService.API
         {
             webApplicationBuilder.Services.Configure<KafkaSettings>(webApplicationBuilder.Configuration.GetSection("KafkaSettings"));
             webApplicationBuilder.Services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<KafkaSettings>>().Value);
+        }
+
+        public static void AddElasticserchProperty(this WebApplicationBuilder webApplicationBuilder)
+        {
+            ElasticsearchHelper.ConfigureLogging();
+            webApplicationBuilder.Host.UseSerilog();
         }
 
         public static void AddHangfireProperty(this WebApplicationBuilder webApplicationBuilder)
