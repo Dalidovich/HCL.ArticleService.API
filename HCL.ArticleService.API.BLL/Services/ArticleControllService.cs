@@ -17,16 +17,16 @@ namespace HCL.ArticleService.API.BLL.Services
     {
         private readonly IArticleRepository _articleRepository;
         private readonly IKafkaProducerService _kafkaProducerService;
-        private readonly IdentityGrpcSettings _identityGrpcSettings;
         private readonly IRedisLockService _redisLockService;
+        private readonly IGrpcService _grpcService;
 
         public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService
-            , IdentityGrpcSettings identityGrpcSettings, IRedisLockService redisLockService)
+            , IRedisLockService redisLockService, IGrpcService grpcService)
         {
             _articleRepository = articleRepository;
             _kafkaProducerService = kafkaProducerService;
-            _identityGrpcSettings = identityGrpcSettings;
             _redisLockService = redisLockService;
+            _grpcService = grpcService;
         }
 
         public async Task<BaseResponse<Article>> CreateArticle(Article article)
@@ -71,7 +71,8 @@ namespace HCL.ArticleService.API.BLL.Services
             var rawArticel = _articleRepository.GetArticlesOdata().Where(x => x.Id == articleId).SingleOrDefault();
             if (rawArticel == null)
             {
-                throw new KeyNotFoundException("[GetFullArticleInfo]");
+
+                return new StandartResponse<ArticleWithAthorDTO>();
             }
 
             var resource = await _redisLockService.GetAthor(rawArticel.Author);
@@ -88,28 +89,7 @@ namespace HCL.ArticleService.API.BLL.Services
                 };
             }
 
-            return await GetFullArticleInfoGrpc(rawArticel);
-        }
-
-        private async Task<BaseResponse<ArticleWithAthorDTO>> GetFullArticleInfoGrpc(Article rawArticel)
-        {
-            var httpHandler = new HttpClientHandler();
-            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-            AthorPublicProfileReply reply;
-            using (var channel = GrpcChannel.ForAddress(_identityGrpcSettings.Host, new GrpcChannelOptions { HttpHandler = httpHandler }))
-            {
-                var client = new AthorPublicProfile.AthorPublicProfileClient(channel);
-                reply = await client.GetProfileAsync(new AthorIdRequest { AccountId = rawArticel.Author });
-            }
-            ArticleWithAthorDTO article = new ArticleWithAthorDTO(reply.Login, reply.Status, reply.CreateDate.ToDateTime(), rawArticel);
-
-            return new StandartResponse<ArticleWithAthorDTO>()
-            {
-                Data = article,
-                StatusCode = StatusCode.ArticleRead
-            };
+            return await _grpcService.GetFullArticleInfoGrpc(rawArticel);
         }
 
         public async Task<BaseResponse<bool>> UpdateArticlesActualState()
