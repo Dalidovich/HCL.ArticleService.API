@@ -1,11 +1,13 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using HCL.ArticleService.API.BLL.gRPCClients;
 using HCL.ArticleService.API.BLL.Interfaces;
+using HCL.ArticleService.API.Controllers;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.InnerResponse;
+using Microsoft.Extensions.Logging;
 using MockQueryable.Moq;
 using MongoDB.Driver;
 using Moq;
@@ -31,6 +33,8 @@ namespace HCL.ArticleService.API.Test
 
             return ar;
         }
+
+        public static readonly ILogger<ArticleController> mockLoggerArticleController = new Mock<ILogger<ArticleController>>().Object;
 
         public static readonly IdentityGrpcSettings identityGrpcSettings = new IdentityGrpcSettings()
         {
