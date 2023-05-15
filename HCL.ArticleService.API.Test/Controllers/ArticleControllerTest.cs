@@ -23,7 +23,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             var articleDto = new ArticleDTO()
             {
@@ -69,7 +69,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.DeleteOwnArticle(accountId.ToString(), articleId) as NoContentResult;
@@ -105,7 +105,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.DeleteOwnArticle(Guid.NewGuid().ToString(), articleId) as ForbidResult;
@@ -140,7 +140,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.DeleteOwnArticle(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()) as NotFoundResult;
@@ -175,7 +175,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.DeleteOwnArticle(Guid.NewGuid().ToString()) as NotFoundResult;
@@ -211,7 +211,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.DeleteOwnArticle(articleId) as NoContentResult;
@@ -247,7 +247,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.GetArticleWithAthor(articleId) as OkObjectResult;
@@ -282,7 +282,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.GetArticleWithAthor(Guid.NewGuid().ToString()) as NotFoundResult;
@@ -318,7 +318,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.GetArticleWithAthor(articleId) as OkObjectResult;
@@ -353,7 +353,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var articServ = new ArticleControllService(articRepMock.Object, kafkaProdMock.Object
                 , redisMock.Object, grpcServMock.Object);
-            var controller = new ArticleController(articServ);
+            var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
             var result = await controller.GetArticleWithAthor(Guid.NewGuid().ToString()) as NotFoundResult;

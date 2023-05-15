@@ -1,6 +1,5 @@
 namespace HCL.ArticleService.API
 {
-
     public class Program
     {
         public static void Main(string[] args)
@@ -17,6 +16,7 @@ namespace HCL.ArticleService.API
             builder.AddHostedServices();
             builder.AddGrpcProperty();
             builder.AddRedisPropperty();
+            builder.AddElasticserchProperty();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
