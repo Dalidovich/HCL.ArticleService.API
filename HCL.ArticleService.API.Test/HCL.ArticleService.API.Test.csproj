@@ -25,8 +25,4 @@
     <ProjectReference Include="..\HCL.ArticleService.API\HCL.ArticleService.API.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="IntegrationTest\Services\" />
-  </ItemGroup>
-
 </Project>

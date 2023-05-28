@@ -17,6 +17,7 @@ namespace HCL.ArticleService.API.Test.IntegrationTest
             return new ContainerBuilder()
                 .WithName(Guid.NewGuid().ToString("N"))
                 .WithImage("mongo:latest")
+                .WithAutoRemove(true)
                 .WithHostname(Guid.NewGuid().ToString("N"))
                 .WithExposedPort(27017)
                 .WithPortBinding(27017, true)
