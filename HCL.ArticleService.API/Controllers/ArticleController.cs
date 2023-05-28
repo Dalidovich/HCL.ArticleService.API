@@ -1,4 +1,3 @@
-using Amazon.Auth.AccessControlPolicy;
 using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.DTO.Builders;
