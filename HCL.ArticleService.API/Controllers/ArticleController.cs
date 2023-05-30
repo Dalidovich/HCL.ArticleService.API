@@ -94,7 +94,7 @@ namespace HCL.ArticleService.API.Controllers
             return NoContent();
         }
 
-        [HttpPost("v1/article/withAthor")]
+        [HttpGet("v1/article/withAthor")]
         public async Task<IActionResult> GetArticleWithAthor([FromQuery] string articleId)
         {
             var articleWithAthor = await _articleControllService.GetFullArticleInfo(articleId);
