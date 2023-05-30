@@ -24,7 +24,7 @@ namespace HCL.ArticleService.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("v1/Article")]
+        [HttpPost("v1/article")]
         public async Task<IActionResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
             var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
