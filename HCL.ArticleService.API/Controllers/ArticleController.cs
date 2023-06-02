@@ -1,4 +1,3 @@
-using Amazon.Auth.AccessControlPolicy;
 using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
 using HCL.ArticleService.API.Domain.DTO.Builders;
@@ -25,7 +24,7 @@ namespace HCL.ArticleService.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("v1/Article")]
+        [HttpPost("v1/article")]
         public async Task<IActionResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
             var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
@@ -95,7 +94,7 @@ namespace HCL.ArticleService.API.Controllers
             return NoContent();
         }
 
-        [HttpPost("v1/article/withAthor")]
+        [HttpGet("v1/article/withAthor")]
         public async Task<IActionResult> GetArticleWithAthor([FromQuery] string articleId)
         {
             var articleWithAthor = await _articleControllService.GetFullArticleInfo(articleId);
