@@ -41,11 +41,11 @@ namespace HCL.ArticleService.API.Test.Controllers
             //Arrange
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
-            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+            var grpcServiceMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articRep = new ArticleRepository(mongoDBSettings);
             var articServ = new ArticleControllService(articRep, kafkaProdMock.Object
-                , redisMock.Object, grpcServMock.Object);
+                , redisMock.Object, grpcServiceMock.Object);
             var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             var articleDto = new ArticleDTO()
@@ -71,7 +71,7 @@ namespace HCL.ArticleService.API.Test.Controllers
 
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
-            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+            var grpcServiceMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articRep = new ArticleRepository(mongoDBSettings);
 
@@ -89,7 +89,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             var articleId = addedEntity.Id;
 
             var articServ = new ArticleControllService(articRep, kafkaProdMock.Object
-                , redisMock.Object, grpcServMock.Object);
+                , redisMock.Object, grpcServiceMock.Object);
             var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
@@ -105,7 +105,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             //Arrange
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
-            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+            var grpcServiceMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articRep = new ArticleRepository(mongoDBSettings);
 
@@ -123,7 +123,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             var articleId = addedEntity.Id;
 
             var articServ = new ArticleControllService(articRep, kafkaProdMock.Object
-                , redisMock.Object, grpcServMock.Object);
+                , redisMock.Object, grpcServiceMock.Object);
             var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
@@ -139,7 +139,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             //Arrange
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
-            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+            var grpcServiceMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articRep = new ArticleRepository(mongoDBSettings);
 
@@ -156,7 +156,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             );
 
             var articServ = new ArticleControllService(articRep, kafkaProdMock.Object
-                , redisMock.Object, grpcServMock.Object);
+                , redisMock.Object, grpcServiceMock.Object);
             var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
@@ -172,7 +172,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             //Arrange
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
-            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+            var grpcServiceMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articRep = new ArticleRepository(mongoDBSettings);
 
@@ -189,7 +189,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             );
 
             var articServ = new ArticleControllService(articRep, kafkaProdMock.Object
-                , redisMock.Object, grpcServMock.Object);
+                , redisMock.Object, grpcServiceMock.Object);
             var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
@@ -205,7 +205,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             //Arrange
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
-            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+            var grpcServiceMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articRep = new ArticleRepository(mongoDBSettings);
 
@@ -222,7 +222,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             );
             var articleId = addedEntity.Id;
             var articServ = new ArticleControllService(articRep, kafkaProdMock.Object
-                , redisMock.Object, grpcServMock.Object);
+                , redisMock.Object, grpcServiceMock.Object);
             var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
@@ -238,7 +238,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             //Arrange
             var kafkaProdMock = StandartMockBuilder.CreateKafkaProducerMock();
             var redisMock = StandartMockBuilder.CreateSuccessReceiveMessageRedisLockServiceMock();
-            var grpcServMock = StandartMockBuilder.CreateGrpcServiceMock();
+            var grpcServiceMock = StandartMockBuilder.CreateGrpcServiceMock();
 
             var articRep = new ArticleRepository(mongoDBSettings);
 
@@ -256,7 +256,7 @@ namespace HCL.ArticleService.API.Test.Controllers
             var articleId = addedEntity.Id;
 
             var articServ = new ArticleControllService(articRep, kafkaProdMock.Object
-                , redisMock.Object, grpcServMock.Object);
+                , redisMock.Object, grpcServiceMock.Object);
             var controller = new ArticleController(articServ, StandartMockBuilder.mockLoggerArticleController);
 
             //Act
