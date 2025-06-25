@@ -1,207 +1,107 @@
-﻿using HCL.ArticleService.API.BLL.Interfaces;
+﻿using Grpc.Net.Client;
+using HCL.ArticleService.API.BLL.gRPCClients;
+using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.DAL.Repositories.Interfaces;
+using HCL.ArticleService.API.Domain.DTO;
+using HCL.ArticleService.API.Domain.DTO.AppSettingsDTO;
 using HCL.ArticleService.API.Domain.Entities;
 using HCL.ArticleService.API.Domain.Enums;
 using HCL.ArticleService.API.Domain.InnerResponse;
-using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HCL.ArticleService.API.BLL.Services
 {
     public class ArticleControllService : IArticleControllService
     {
         private readonly IArticleRepository _articleRepository;
-        protected readonly ILogger<IArticleControllService> _logger;
+        private readonly IKafkaProducerService _kafkaProducerService;
+        private readonly IRedisLockService _redisLockService;
+        private readonly IGrpcService _grpcService;
 
-        public ArticleControllService(IArticleRepository articleRepository, ILogger<IArticleControllService> logger)
+        public ArticleControllService(IArticleRepository articleRepository, IKafkaProducerService kafkaProducerService
+            , IRedisLockService redisLockService, IGrpcService grpcService)
         {
             _articleRepository = articleRepository;
-            _logger = logger;
+            _kafkaProducerService = kafkaProducerService;
+            _redisLockService = redisLockService;
+            _grpcService = grpcService;
         }
 
-        private async Task<BaseResponse<Article>> GetArticleBase(Article? entity)
+        public async Task<BaseResponse<Article>> CreateArticle(Article article)
         {
-            try
-            {
-                if (entity == null)
-                {
-                    return new StandartResponse<Article>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                return new StandartResponse<Article>()
-                {
-                    Data = entity,
-                    StatusCode = StatusCode.ArticleRead
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetArticleBase] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
+            var createdArticle = await _articleRepository.AddAsync(article);
+            await _kafkaProducerService.CreateMessage(new KafkaArticleCreateNotification(createdArticle));
 
-        public async Task<BaseResponse<Article>> GetArticle(BsonDocument filter)
-        {
-            try
+            return new StandartResponse<Article>()
             {
-                var entity = await _articleRepository.GetArticleAsync(filter);
-                return await GetArticleBase(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetArticle_BsonDocument] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
-
-        public async Task<BaseResponse<Article>> GetArticle(Expression<Func<Article, bool>> expression)
-        {
-            try
-            {
-                var entity = await _articleRepository.GetArticleAsync(expression);
-                return await GetArticleBase(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetArticle_Expression] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
-
-        public async Task<BaseResponse<Article>> CreateArticle(Article account)
-        {
-            try
-            {
-                var createdAccount = await _articleRepository.AddAsync(account);
-                return new StandartResponse<Article>()
-                {
-                    Data = createdAccount,
-                    StatusCode = StatusCode.ArticleCreate
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[CreateArticle] : {ex.Message}");
-                return new StandartResponse<Article>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = createdArticle,
+                StatusCode = StatusCode.ArticleCreate
+            };
         }
 
         public async Task<BaseResponse<bool>> DeleteArticle(Expression<Func<Article, bool>> expression)
         {
-            try
+
+            return new StandartResponse<bool>()
             {
-                var entity = await _articleRepository.GetArticlesAsync(expression,0,1);
-                if (entity == null)
-                {
-                    return new StandartResponse<bool>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                return new StandartResponse<bool>()
-                {
-                    Data = await _articleRepository.DeleteAsync(expression),
-                    StatusCode = StatusCode.ArticleDelete
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[DeleteArticle] : {ex.Message}");
-                return new StandartResponse<bool>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = await _articleRepository.DeleteAsync(expression),
+                StatusCode = StatusCode.ArticleDelete
+            };
         }
 
-        private async Task<BaseResponse<IEnumerable<Article>>> GetAllArticlesBase(IEnumerable<Article>? contents)
+        public BaseResponse<IQueryable<Article>> GetArticleOData()
         {
-            try
+            var contents = _articleRepository.GetArticlesOdata();
+            if (contents.Count() == 0)
             {
-                if (contents == null)
+                throw new KeyNotFoundException("[GetArticleOData]");
+            }
+
+            return new StandartResponse<IQueryable<Article>>()
+            {
+                Data = contents,
+                StatusCode = StatusCode.ArticleRead
+            };
+        }
+
+        public async Task<BaseResponse<ArticleWithAthorDTO>> GetFullArticleInfo(string articleId)
+        {
+            var rawArticel = _articleRepository.GetArticlesOdata().Where(x => x.Id == articleId).SingleOrDefault();
+            if (rawArticel == null)
+            {
+
+                return new StandartResponse<ArticleWithAthorDTO>();
+            }
+
+            var resource = await _redisLockService.GetAthor(rawArticel.Author);
+
+            if (resource.StatusCode == StatusCode.RedisReceive)
+            {
+                ArticleWithAthorDTO article = new ArticleWithAthorDTO
+                    (resource.Data.Login, resource.Data.Status, resource.Data.CreateDate.ToDateTime(), rawArticel);
+
+                return new StandartResponse<ArticleWithAthorDTO>()
                 {
-                    return new StandartResponse<IEnumerable<Article>>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                return new StandartResponse<IEnumerable<Article>>()
-                {
-                    Data = contents,
+                    Data = article,
                     StatusCode = StatusCode.ArticleRead
                 };
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetAllArticles] : {ex.Message}");
-                return new StandartResponse<IEnumerable<Article>>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+
+            return await _grpcService.GetFullArticleInfoGrpc(rawArticel);
         }
 
-        public async Task<BaseResponse<IEnumerable<Article>>> GetAllArticles(Expression<Func<Article, bool>> expression, int skip, int loadCount)
+        public async Task<BaseResponse<bool>> UpdateArticlesActualState()
         {
-            try
-            {
-                var contents = await _articleRepository.GetArticlesAsync(expression,skip,loadCount);
-                return await GetAllArticlesBase(contents);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetAllArticles_Expression] : {ex.Message}");
-                return new StandartResponse<IEnumerable<Article>>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
+            var filter = Builders<Article>.Filter.Lte(x => x.CreateDate, DateTime.Now.AddYears(-2));
+            var updeteSettings = Builders<Article>.Update.Set(x => x.IsActual, false);
 
-        public async Task<BaseResponse<IEnumerable<Article>>> GetAllArticles(BsonDocument filter, int skip, int loadCount)
-        {
-            try
+            return new StandartResponse<bool>()
             {
-                var contents = await _articleRepository.GetArticlesAsync(filter,skip,loadCount);
-                return await GetAllArticlesBase(contents);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetAllArticles_BsonDocument] : {ex.Message}");
-                return new StandartResponse<IEnumerable<Article>>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = await _articleRepository.UpdateManyAsync(filter, updeteSettings),
+                StatusCode = StatusCode.ArticleUpdate
+            };
         }
     }
 }

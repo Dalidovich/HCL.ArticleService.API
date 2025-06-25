@@ -1,11 +1,12 @@
 using HCL.ArticleService.API.BLL.Interfaces;
 using HCL.ArticleService.API.Domain.DTO;
+using HCL.ArticleService.API.Domain.DTO.Builders;
 using HCL.ArticleService.API.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Data;
+using System.Text.Json;
 
 namespace HCL.ArticleService.API.Controllers
 {
@@ -13,86 +14,103 @@ namespace HCL.ArticleService.API.Controllers
     [Route("api/[controller]")]
     public class ArticleController : ControllerBase
     {
-        private readonly ILogger<ArticleController> _logger;
         private readonly IArticleControllService _articleControllService;
+        private readonly ILogger<ArticleController> _logger;
 
-        public ArticleController(ILogger<ArticleController> logger, IArticleControllService articleControllService)
+        public ArticleController(IArticleControllService articleControllService, ILogger<ArticleController> logger)
         {
+            _articleControllService = articleControllService;
             _logger = logger;
-            _articleControllService= articleControllService;
-        }
-
-        //[Authorize]
-        [HttpPost("CreateArticle/")]
-        public async Task<IResult> CreateArticle(ArticleDTO articleDTO)
-        {
-            if (articleDTO == null)
-            {
-                return Results.NotFound();
-            }
-            var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
-            if (resourse.Data == null)
-            {
-                return Results.NoContent();
-            }
-            else
-            {
-                return Results.Json(new { articleId = resourse.Data.Id});
-            }
         }
 
         [Authorize]
-        [HttpDelete("DeleteOwnArticle/{ownId}/{articleId}")]
-        public async Task<IResult> DeleteOwnArticle(string ownId, string articleId)
+        [HttpPost("v1/article")]
+        public async Task<IActionResult> CreateArticle([FromQuery] ArticleDTO articleDTO)
         {
-            var article=await _articleControllService.GetArticle(x=>x.Id==articleId);
-            if (article.Data == null)
+            var resourse = await _articleControllService.CreateArticle(new Article(articleDTO));
+            if (resourse.StatusCode == Domain.Enums.StatusCode.ArticleCreate)
             {
-                return Results.NoContent();
+
+                var log = new LogDTOBuidlder("CreateArticle(articleDTO)")
+                    .BuildMessage("create article")
+                    .BuildStatusCode(201)
+                    .BuildSuccessState(true)
+                    .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
+
+                return Created("", new { articleId = resourse.Data.Id });
             }
-            else if (article.StatusCode == Domain.Enums.StatusCode.ArticleRead && article.Data.Author==ownId)
+
+            return NotFound();
+        }
+
+        [Authorize]
+        [HttpDelete("v1/article/account")]
+        public async Task<IActionResult> DeleteOwnArticle([FromQuery] string ownId, [FromQuery] string articleId)
+        {
+            var article = _articleControllService.GetArticleOData().Data
+                ?.Where(x => x.Id == articleId)
+                .SingleOrDefault();
+            if (article == null)
             {
-                await _articleControllService.DeleteArticle(x=>x.Id==articleId);
-                return Results.Ok();
+
+                return NotFound();
             }
-            return Results.StatusCode(403);
+            else if (article.Author == ownId)
+            {
+                await _articleControllService.DeleteArticle(x => x.Id == articleId);
+                var log = new LogDTOBuidlder("DeleteOwnArticle(ownId,articleId)")
+                    .BuildMessage("delete article")
+                    .BuildStatusCode(204)
+                    .BuildSuccessState(true)
+                    .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
+
+                return NoContent();
+            }
+
+            return Forbid();
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("DeleteArticle/{articleId}")]
-        public async Task<IResult> DeleteOwnArticle(string articleId)
+        [HttpDelete("v1/article")]
+        public async Task<IActionResult> DeleteOwnArticle([FromQuery] string articleId)
         {
-            var article = await _articleControllService.GetArticle(x => x.Id == articleId);
-            if (article.StatusCode == Domain.Enums.StatusCode.ArticleRead)
+            var article = _articleControllService.GetArticleOData().Data
+                ?.Where(x => x.Id == articleId)
+                .SingleOrDefault();
+            if (article == null)
             {
-                await _articleControllService.DeleteArticle(x => x.Id == articleId);
-                return Results.Ok();
+                var log = new LogDTOBuidlder("DeleteOwnArticle(articleId)")
+                .BuildMessage("admin account delete article")
+                .BuildStatusCode(204)
+                .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
+
+                return NotFound();
             }
-            return Results.NoContent();
+            await _articleControllService.DeleteArticle(x => x.Id == articleId);
+
+            return NoContent();
         }
 
-        [HttpGet("GetArticle/{filterOperator}/{field}/{value}")]
-        public async Task<IResult> GetArticle(string filterOperator,string field, string value)
+        [HttpGet("v1/article/withAthor")]
+        public async Task<IActionResult> GetArticleWithAthor([FromQuery] string articleId)
         {
-            var filter = new BsonDocument { { field, new BsonDocument(filterOperator, value) } };
-            var article = await _articleControllService.GetArticle(filter);
-            if (article.StatusCode == Domain.Enums.StatusCode.ArticleRead)
+            var articleWithAthor = await _articleControllService.GetFullArticleInfo(articleId);
+            if (articleWithAthor.StatusCode == Domain.Enums.StatusCode.EntityNotFound)
             {
-                return Results.Json(article.Data);
-            }
-            return Results.NoContent();
-        }
+                var log = new LogDTOBuidlder("GetArticleWithAthor(articleId)")
+                    .BuildMessage("get article with athor")
+                    .BuildStatusCode(204)
+                    .BuildSuccessState(true)
+                    .Build();
+                _logger.LogInformation(JsonSerializer.Serialize(log));
 
-        [HttpGet("GetArticle/{filterOperator}/{field}/{value}/{skipCount}/{takeCount}")]
-        public async Task<IResult> GetArticles(string filterOperator, string field, string value,int skipCount,int takeCount)
-        {
-            var filter = new BsonDocument { { field, new BsonDocument(filterOperator, value) } };
-            var article = await _articleControllService.GetAllArticles(filter, skipCount, takeCount);
-            if (article.StatusCode == Domain.Enums.StatusCode.ArticleRead)
-            {
-                return Results.Json(article.Data);
+                return NotFound();
             }
-            return Results.NoContent();
+
+            return Ok(articleWithAthor.Data);
         }
     }
 }

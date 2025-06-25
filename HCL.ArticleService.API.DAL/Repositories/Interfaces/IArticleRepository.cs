@@ -1,5 +1,5 @@
 ﻿using HCL.ArticleService.API.Domain.Entities;
-using MongoDB.Bson;
+using MongoDB.Driver;
 using System.Linq.Expressions;
 
 namespace HCL.ArticleService.API.DAL.Repositories.Interfaces
@@ -8,9 +8,7 @@ namespace HCL.ArticleService.API.DAL.Repositories.Interfaces
     {
         public Task<Article> AddAsync(Article article);
         public Task<bool> DeleteAsync(Expression<Func<Article, bool>> expression);
-        public Task<IEnumerable<Article>> GetArticlesAsync(Expression<Func<Article, bool>> expression, int skip, int loadCount);
-        public Task<IEnumerable<Article>> GetArticlesAsync(BsonDocument filter, int skip, int loadCount);
-        public Task<Article> GetArticleAsync(Expression<Func<Article, bool>> expression);
-        public Task<Article> GetArticleAsync(BsonDocument filter);
+        public IQueryable<Article> GetArticlesOdata();
+        public Task<bool> UpdateManyAsync(FilterDefinition<Article> filter, UpdateDefinition<Article> updateDefinition);
     }
 }

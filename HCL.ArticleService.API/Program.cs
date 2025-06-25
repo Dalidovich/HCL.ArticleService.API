@@ -1,16 +1,22 @@
-
 namespace HCL.ArticleService.API
 {
-
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
             builder.AddRepositores();
             builder.AddServices();
+            builder.AddKafkaProperty();
+            builder.AddMongoDBConnection();
+            builder.AddODataProperty();
+            builder.AddAuthProperty();
+            builder.AddHangfireProperty();
+            builder.AddHostedServices();
+            builder.AddGrpcProperty();
+            builder.AddRedisPropperty();
+            builder.AddElasticserchProperty();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -24,11 +30,10 @@ namespace HCL.ArticleService.API
                 app.UseSwaggerUI();
             }
 
+            app.AddMiddleware();
+
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
